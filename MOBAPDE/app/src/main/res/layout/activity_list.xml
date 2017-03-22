@@ -16,6 +16,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="gone"
-        android:text="Empty List"
+        android:text="No data"
         android:textSize="18sp" />
 </RelativeLayout>

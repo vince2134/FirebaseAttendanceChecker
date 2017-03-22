@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -27,6 +28,7 @@ public class AttendanceFragment extends Fragment {
     RecyclerViewEmptySupport recView;
     AttendanceAdapter adapter;
     DatabaseReference mDatabase;
+    TextView empty;
 
     public static AttendanceFragment newInstance(AttendanceFilter filter) {
         AttendanceFragment f = new AttendanceFragment();
@@ -51,34 +53,38 @@ public class AttendanceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_list, container, false);
 
-        Firebase.setAndroidContext(getContext());
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
-        Log.d("FIREBASE", mDatabase.getKey());
+        //INITIALIZE FILTER
         filter = new AttendanceFilter();
         filter.setBuilding(getBuilding());
         filter.setRID(getRID());
         filter.setStartMillis(getStartMillis());
         filter.setDone(getDone());
         filter.setSubmitted(getSubmitted());
+        filter.setTab(getTab());
+
+        Log.d("AttendanceFragment", filter.getTab() + "");
+
+        Firebase.setAndroidContext(getContext());
+
+        //filter(filter);
+
+        if(filter.getTab() == 0)
+            mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+        else
+            mDatabase = FirebaseDatabase.getInstance().getReference().child("");
+
+        Log.d("FIREBASE", mDatabase.getKey() + "");
 
         recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        /*FirebaseRecyclerAdapter<Attendance, AttendanceViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Attendance, AttendanceViewHolder>(
-                Attendance.class,
-                R.layout.list_item,
-                AttendanceViewHolder.class,
-                mDatabase
-        ) {
-            @Override
-            protected void populateViewHolder(AttendanceViewHolder viewHolder, Attendance model, int position) {
-                viewHolder.setName(model.getName());
-                viewHolder.mView.setTag(model.getName());
-                viewHolder.setOnClickListener();
+        if(mDatabase.getKey() == null) {
+            if(filter.getTab() == 1) {
+                empty = (TextView) v.findViewById(R.id.empty_view);
+                empty.setText("No finished attendance yet");
             }
-        };*/
-
-        //recView.setEmptyView(v.findViewById(R.id.empty_view));
+            recView.setEmptyView(v.findViewById(R.id.empty_view));
+        }
 
         if(getContext() != null) {
             adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase);
@@ -91,36 +97,8 @@ public class AttendanceFragment extends Fragment {
             });
         }
 
-        //recView.setAdapter(adapter);
-
         return v;
     }
-
-    /*public static class AttendanceViewHolder extends RecyclerViewEmptySupport.ViewHolder{
-
-        View mView;
-
-        public AttendanceViewHolder(View itemView) {
-            super(itemView);
-
-            mView = itemView;
-        }
-
-        public void setName(String name){
-            TextView tvName = (TextView) mView.findViewById(R.id.lbl_item_text);
-            tvName.setText(name);
-        }
-
-        public void setOnClickListener(){
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String name = (String) mView.getTag();
-                    //onItemClickListener.onItemClick(name);
-                }
-            });
-        }
-    }*/
 
     String getRID() {
         return (getArguments().getString("RID"));
@@ -136,5 +114,37 @@ public class AttendanceFragment extends Fragment {
 
     boolean getDone(){ return (getArguments().getBoolean("ISDONE"));}
 
+    int getTab(){
+        return getArguments().getInt("TAB_ID");
+    }
+
     boolean getSubmitted() { return (getArguments().getBoolean("ISSUBMITTED"));}
+
+    public void filter(AttendanceFilter filter){
+
+    }
+
+    /*private class ShowSpinnerTask extends AsyncTask<Void, Void, Void> {
+        SpinnerFragment mSpinnerFragment;
+
+        @Override
+        protected void onPreExecute() {
+            mSpinnerFragment = new SpinnerFragment();
+            getFragmentManager().beginTransaction().add(R.id.activity_list, mSpinnerFragment).commit();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Do some background process here.
+            // It just waits 5 sec in this Tutorial
+            //mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            getFragmentManager().beginTransaction().remove(mSpinnerFragment).commit();
+        }
+    }*/
+
 }

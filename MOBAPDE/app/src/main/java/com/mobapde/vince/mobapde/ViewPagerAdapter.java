@@ -27,7 +27,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public Fragment getItem(int position) {
-        //Log.i("tagg", "ViewPagerAdapter.getItem()   -- called");
+        Log.d("ViewPagerAdapterFilter", filter.getTab() + "");
         if (position == 0) {
             Log.i("tagg", "ViewPagerAdapter.getItem()   -- position ZERO called");
             al = AttendanceFragment.newInstance(filter);
