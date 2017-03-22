@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:minHeight="?attr/actionBarSize"
+        android:title="Class Details"
+        android:id="@+id/detailToolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/upperLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorDefault"
+                android:elevation="0dp"
+                android:orientation="vertical"
+                android:paddingTop="40dp"
+                android:paddingBottom="40dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/facultyImage"
+                        android:layout_width="145dp"
+                        android:layout_height="145dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/winfred"/>
+
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/facultyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Mr. Winfred Villaluna"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_overlay"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/facultyCourse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SOFENGG"
+                        android:textAlignment="center"
+                        android:textColor="@color/black_overlay"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:text="G304"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/facultyRoom"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:layout_marginLeft="20dp"
+                        android:textColor="@color/black_overlay"/>
+
+                    <TextView
+                        android:text="09:15 - 10:45"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:textColor="@color/black_overlay"
+                        android:id="@+id/classTime"
+                        android:layout_marginLeft="20dp"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/rightBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:theme="@style/AppTheme.Button"
+                    android:text="see original prof"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/middleLayout"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorDefault"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="40dp"
+                android:paddingBottom="40dp"
+                android:layout_height="wrap_content"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:id="@+id/wrapperLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal">
+
+                        <Button
+                            android:id="@+id/abBtn"
+                            android:layout_width="65dp"
+                            android:layout_height="wrap_content"
+                            android:text="Absent"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+                        <Button
+                            android:id="@+id/edBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:text="Early Dismissal"
+                            android:padding="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+
+                            />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal">
+
+                        <Button
+                            android:id="@+id/laBtn"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Late"
+                            android:textSize="10sp" />
+
+                        <Button
+                            android:id="@+id/prBtn"
+                            android:layout_width="70dp"
+                            android:layout_height="wrap_content"
+                            android:text="Present"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+                        <Button
+                            android:id="@+id/sbBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:text="Substitute"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal">
+
+                        <Button
+                            android:id="@+id/swBtn"
+                            android:layout_width="80dp"
+                            android:layout_height="50dp"
+                            android:text="Seatwork"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+                        <Button
+                            android:id="@+id/usBtn"
+                            android:layout_width="95dp"
+                            android:layout_height="50dp"
+                            android:text="Unscheduled"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+                        <Button
+                            android:id="@+id/vrBtn"
+                            android:layout_width="95dp"
+                            android:layout_height="50dp"
+                            android:text="Vacant Room"
+                            android:paddingTop="15dp"
+                            android:paddingBottom="15dp"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/cardview_light_background"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="15dp">
+
+                        <EditText
+                            android:id="@+id/remarkField"
+                            android:layout_width="match_parent"
+                            android:textSize="14sp"
+                            android:inputType="textLongMessage"
+                            android:maxLength="200"
+                            android:hint="Write a remark..."
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingTop="15dp">
+
+                        <Button
+                            android:id="@+id/submitButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textSize="14sp"
+                            android:text="save"
+                            android:theme="@style/AppTheme.Button" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
