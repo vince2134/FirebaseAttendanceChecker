@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">AttendanceChecker</string>
+    <string name="openDrawer">Open Drawer </string>
+    <string name="closeDrawer">Close Drawer </string>
+    <string-array name="code_names">
+        <item>Present</item>
+        <item>Absent</item>
+        <item>Late</item>
+        <item>Substitute</item>
+        <item>Seatwork</item>
+        <item>Vacant Room</item>
+        <item>Early Dismissal</item>
+        <item>Unscheduled Class</item>
+    </string-array>
+    <string name="nav_allbuildings">All Buildings</string>
+    <string name="nav_lasallehall">La Salle Hall</string>
+    <string name="nav_yuchengco">Yuchengco</string>
+    <string name="nav_saintjoseph">Saint Joseph</string>
+    <string name="nav_velasco">Velasco</string>
+    <string name="nav_miguel">Miguel</string>
+    <string name="nav_gokongwei">Gokongwei</string>
+    <string name="nav_strc">STRC</string>
+    <string name="nav_andrew">Andrew</string>
+    <string name="nav_razon">Razon</string>
+    <string name="nav_help">Help</string>
+    <string name="nav_logout">Log Out</string>
+    <string name="absent">Absent</string>
+    <string name="early_dismissal">Early Dismissal</string>
+    <string name="late">Late</string>
+    <string name="present">Present</string>
+    <string name="seatwork">Seatwork</string>
+    <string name="submit">Submit</string>
+    <string name="substitute">Substitute</string>
+    <string name="unscheduled_class">Unscheduled Class</string>
+    <string name="vacant_room">Vacant Room</string>
+</resources>
