@@ -9,10 +9,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     public static final int TAB_NUMBERS = 2;
+    public static final int PENDING_TAB = 0;
+    public static final int DONE_TAB = 1;
 
     public static Boolean submitted = true;
     private Toolbar toolbar;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ActionBarDrawerToggle mDrawerToggle;                  // Declaring Action Bar Drawer Toggle
 
     TextView emptyView;
+    Button btnSubmit;
 
     AttendanceFilter primaryFilter;
 
@@ -39,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setTitle("Attendance");
-        setSupportActionBar(toolbar);
+
+        btnSubmit = (Button) findViewById(R.id.btn_submit);
 
         initializeTabs();
         initializeDrawer();
@@ -70,6 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
                 primaryFilter.setTab(position);
                 pagerAdapter.notifyDataSetChanged();
+
+                if(position == PENDING_TAB)
+                    btnSubmit.setVisibility(View.GONE);
+                else if(position == DONE_TAB)
+                    btnSubmit.setVisibility(View.VISIBLE);
 
                 /*List<Fragment>  fragments = getSupportFragmentManager().getFragments();
                 if(fragments != null){

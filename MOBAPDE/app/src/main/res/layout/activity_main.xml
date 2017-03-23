@@ -40,12 +40,13 @@
 
                 <Button
                     android:text="You cannot submit yet"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:textColor="@color/cardview_light_background"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
                     android:height="50dp"
-                    android:id="@+id/submitSheetButton"
+                    android:id="@+id/btn_submit"
                     android:elevation="0dp" />
 
 

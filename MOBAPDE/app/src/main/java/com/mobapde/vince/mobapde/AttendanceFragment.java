@@ -29,6 +29,7 @@ public class AttendanceFragment extends Fragment {
     AttendanceAdapter adapter;
     DatabaseReference mDatabase;
     TextView empty;
+    View v;
 
     public static AttendanceFragment newInstance(AttendanceFilter filter) {
         AttendanceFragment f = new AttendanceFragment();
@@ -51,40 +52,16 @@ public class AttendanceFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_list, container, false);
+        v = inflater.inflate(R.layout.activity_list, container, false);
 
-        //INITIALIZE FILTER
-        filter = new AttendanceFilter();
-        filter.setBuilding(getBuilding());
-        filter.setRID(getRID());
-        filter.setStartMillis(getStartMillis());
-        filter.setDone(getDone());
-        filter.setSubmitted(getSubmitted());
-        filter.setTab(getTab());
+        initializeFilter();
 
         Log.d("AttendanceFragment", filter.getTab() + "");
 
         Firebase.setAndroidContext(getContext());
 
         //filter(filter);
-
-        if(filter.getTab() == 0)
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
-        else
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("");
-
-        Log.d("FIREBASE", mDatabase.getKey() + "");
-
-        recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);
-        recView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        if(mDatabase.getKey() == null) {
-            if(filter.getTab() == 1) {
-                empty = (TextView) v.findViewById(R.id.empty_view);
-                empty.setText("No finished attendance yet");
-            }
-            recView.setEmptyView(v.findViewById(R.id.empty_view));
-        }
+        handleFilter();
 
         if(getContext() != null) {
             adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase);
@@ -122,6 +99,40 @@ public class AttendanceFragment extends Fragment {
 
     public void filter(AttendanceFilter filter){
 
+    }
+
+    public void initializeFilter(){
+        //INITIALIZE FILTER
+        filter = new AttendanceFilter();
+        filter.setBuilding(getBuilding());
+        filter.setRID(getRID());
+        filter.setStartMillis(getStartMillis());
+        filter.setDone(getDone());
+        filter.setSubmitted(getSubmitted());
+        filter.setTab(getTab());
+    }
+
+    public void handleFilter(){
+        if(filter.getTab() == 0) {
+            mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
+            empty = (TextView) v.findViewById(R.id.empty_view);
+            empty.setText("No pending attendance");
+        }
+        else
+            mDatabase = FirebaseDatabase.getInstance().getReference().child("");
+
+        Log.d("FIREBASE", mDatabase.getKey() + "");
+
+        recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);
+        recView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        if(mDatabase.getKey() == null) {
+            if(filter.getTab() == 1) {
+                empty = (TextView) v.findViewById(R.id.empty_view);
+                empty.setText("No finished attendance yet");
+            }
+            recView.setEmptyView(v.findViewById(R.id.empty_view));
+        }
     }
 
     /*private class ShowSpinnerTask extends AsyncTask<Void, Void, Void> {
