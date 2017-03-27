@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:gravity="center"
+    tools:context="com.mobapde.vince.mobapde.SetupAccountActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:layout_margin="16dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/img_btn_profile"
+            android:background="#00FFFF"
+            android:src="@drawable/default_profile"
+            android:scaleType="centerCrop"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+
+        <ImageView
+            android:id="@+id/img_plus"
+            android:layout_margin="5dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_add_circle_white_48dp"
+            android:layout_alignTop="@+id/img_btn_profile"
+            android:layout_alignEnd="@+id/img_btn_profile" />
+
+        <EditText
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/et_name"
+            android:padding="10dp"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/img_btn_profile"
+            android:background="@drawable/input_outline"
+            android:hint="Full Name"/>
+
+        <Button
+            android:layout_below="@id/et_name"
+            android:id="@+id/btn_finish_setup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="finish setup"
+            android:theme="@style/AppTheme.Button"/>
+    </RelativeLayout>
+</RelativeLayout>

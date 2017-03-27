@@ -4,6 +4,7 @@
     <color name="colorBackground">#F2F2F2</color>
     <color name="colorPrimary">#087830</color>
     <color name="colorPrimaryDark">#00521D</color>
+    <color name="grayColor">#c2c2c2</color>
     <color name="tabsScrollColor">#FFFFFF</color>
     <color name="colorAccent">#087830</color>
     <color name="colorRed">#f44336</color>

@@ -121,6 +121,8 @@ public class AttendanceFragment extends Fragment {
         else
             mDatabase = FirebaseDatabase.getInstance().getReference().child("");
 
+        mDatabase.keepSynced(true);
+
         Log.d("FIREBASE", mDatabase.getKey() + "");
 
         recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);

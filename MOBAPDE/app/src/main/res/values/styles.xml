@@ -35,7 +35,7 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
-        <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="colorButtonNormal">#FFFFFF</item>
+        <item name="android:textColor">@color/colorPrimary</item>@color/colorPrimary
     </style>
 </resources>
