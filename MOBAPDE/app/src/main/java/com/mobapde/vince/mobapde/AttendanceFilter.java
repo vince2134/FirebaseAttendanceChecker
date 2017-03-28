@@ -5,20 +5,17 @@ package com.mobapde.vince.mobapde;
  */
 
 public class AttendanceFilter {
-    private String building, RID, status;
+    private String building, RID, status, filterString;
     private long startMillis;
-    private boolean done;
-    private boolean submitted;
     private  int tab;
-
 
     public AttendanceFilter(){
         startMillis = 0;
-        status = "";
-        done = false;
-        submitted = false;
+        status = "_";
+        building = "_";
+        RID = "_";
         tab = 0;
-
+        updateFilterString();
     }
 
     public long getStartMillis() {
@@ -27,14 +24,7 @@ public class AttendanceFilter {
 
     public void setStartMillis(long startMillis) {
         this.startMillis = startMillis;
-    }
-
-    public boolean isDone() {
-        return done;
-    }
-
-    public boolean isSubmitted() {
-        return submitted;
+        updateFilterString();
     }
 
     public String getRID() {
@@ -43,6 +33,7 @@ public class AttendanceFilter {
 
     public void setRID(String RID) {
         this.RID = RID;
+        updateFilterString();
     }
 
     public String getBuilding() {
@@ -51,6 +42,7 @@ public class AttendanceFilter {
 
     public void setBuilding(String building) {
         this.building = building;
+        updateFilterString();
     }
 
     public String getStatus() {
@@ -59,25 +51,34 @@ public class AttendanceFilter {
 
     public void setStatus(String status) {
         this.status = status;
+        updateFilterString();
     }
-
-    public boolean getDone(){
-        return done;
-    }
-
-    public void setDone(boolean b){
-        this.done = b;
-    }
-
-    public boolean getSubmitted(){
-        return submitted;
-    }
-
-    public void setSubmitted(boolean b){this.submitted = b;}
 
     public int getTab(){
         return tab;
     }
 
-    public void setTab(int i){this.tab = i;}
+    public void setTab(int i){
+        this.tab = i;
+
+        if(i == 0)
+            status = "PENDING";
+        if(i == 1)
+            status = "DONE";
+
+        updateFilterString();
+    }
+
+    public String getFilterString() {
+        return filterString;
+    }
+
+    private void updateFilterString(){
+        String startMillisString = startMillis + "";
+
+        if(startMillisString.equals("0"))
+            startMillisString = "_";
+
+        this.filterString = RID + "-" + status + "-" + building + "-" + startMillisString;
+    }
 }

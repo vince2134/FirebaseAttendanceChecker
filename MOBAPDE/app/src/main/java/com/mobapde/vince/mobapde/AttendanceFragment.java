@@ -39,8 +39,6 @@ public class AttendanceFragment extends Fragment {
         args.putString("RID", filter.getRID());
         args.putString("BUILDING", filter.getBuilding());
         args.putLong("START_M", filter.getStartMillis());
-        args.putBoolean("ISDONE", filter.getDone());
-        args.putBoolean("ISSUBMITTED", filter.getSubmitted());
         args.putInt("TAB_ID", filter.getTab());
         f.setArguments(args);
 
@@ -97,29 +95,17 @@ public class AttendanceFragment extends Fragment {
 
     boolean getSubmitted() { return (getArguments().getBoolean("ISSUBMITTED"));}
 
-    public void filter(AttendanceFilter filter){
-
-    }
-
     public void initializeFilter(){
         //INITIALIZE FILTER
         filter = new AttendanceFilter();
         filter.setBuilding(getBuilding());
         filter.setRID(getRID());
         filter.setStartMillis(getStartMillis());
-        filter.setDone(getDone());
-        filter.setSubmitted(getSubmitted());
         filter.setTab(getTab());
     }
 
     public void handleFilter(){
-        if(filter.getTab() == 0) {
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
-            empty = (TextView) v.findViewById(R.id.empty_view);
-            empty.setText("No pending attendance");
-        }
-        else
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(filter.getFilterString());
 
         mDatabase.keepSynced(true);
 

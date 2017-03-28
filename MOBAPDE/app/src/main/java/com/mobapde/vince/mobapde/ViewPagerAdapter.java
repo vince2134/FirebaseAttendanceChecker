@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
-import static com.mobapde.vince.mobapde.MainActivity.submitted;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     CharSequence Titles[];
@@ -34,10 +33,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             return al;
         } else if (position == 1) {
             Log.i("tagg", "ViewPagerAdapter.getItem()   -- position ONE called");
-            filter.setDone(true);
-            filter.setSubmitted(!submitted);
-            if(!submitted)
-                filter.setSubmitted(submitted);
              al = AttendanceFragment.newInstance(filter);
             return al;
         } else
