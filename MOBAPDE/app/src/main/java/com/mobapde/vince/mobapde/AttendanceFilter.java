@@ -5,7 +5,7 @@ package com.mobapde.vince.mobapde;
  */
 
 public class AttendanceFilter {
-    private String building, RID, status, filterString;
+    private String building, rotationId, status, filterString;
     private long startMillis;
     private  int tab;
 
@@ -13,7 +13,7 @@ public class AttendanceFilter {
         startMillis = 0;
         status = "_";
         building = "_";
-        RID = "_";
+        rotationId = "_";
         tab = 0;
         updateFilterString();
     }
@@ -27,12 +27,12 @@ public class AttendanceFilter {
         updateFilterString();
     }
 
-    public String getRID() {
-        return RID;
+    public String getRotationId() {
+        return rotationId;
     }
 
-    public void setRID(String RID) {
-        this.RID = RID;
+    public void setRotationId(String rotationId) {
+        this.rotationId = rotationId;
         updateFilterString();
     }
 
@@ -79,6 +79,6 @@ public class AttendanceFilter {
         if(startMillisString.equals("0"))
             startMillisString = "_";
 
-        this.filterString = RID + "-" + status + "-" + building + "-" + startMillisString;
+        this.filterString = rotationId + "-" + status + "-" + building + "-" + startMillisString;
     }
 }

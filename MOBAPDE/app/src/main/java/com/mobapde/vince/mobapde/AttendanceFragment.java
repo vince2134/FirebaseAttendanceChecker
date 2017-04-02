@@ -13,8 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mobapde.vince.mobapde.support.RecyclerViewEmptySupport;
 
 /**
@@ -29,6 +32,7 @@ public class AttendanceFragment extends Fragment {
     AttendanceAdapter adapter;
     DatabaseReference mDatabase;
     TextView empty;
+    Boolean setEmpty = false;
     View v;
 
     public static AttendanceFragment newInstance(AttendanceFilter filter) {
@@ -36,7 +40,7 @@ public class AttendanceFragment extends Fragment {
 
         Bundle args = new Bundle();
 
-        args.putString("RID", filter.getRID());
+        args.putString("ROTATION_ID", filter.getRotationId());
         args.putString("BUILDING", filter.getBuilding());
         args.putLong("START_M", filter.getStartMillis());
         args.putInt("TAB_ID", filter.getTab());
@@ -63,20 +67,43 @@ public class AttendanceFragment extends Fragment {
 
         if(getContext() != null) {
             adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase);
-            recView.setAdapter(adapter);
-            adapter.setOnItemClickListener(new AttendanceAdapter.OnItemClickListener() {
+
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onItemClick(String name) {
-                    Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d("DATA_CHANGED", dataSnapshot.hasChildren() + "");
+
+                    if(!dataSnapshot.hasChildren()){
+                        Log.d("SETTING", setEmpty + "");
+                        if(filter.getTab() == 1) {
+                            empty = (TextView) v.findViewById(R.id.empty_view);
+                            empty.setText("No finished attendance yet");
+                        }
+                        recView.setEmptyView(v.findViewById(R.id.empty_view));
+                    }
+
+                    recView.setAdapter(adapter);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
                 }
             });
         }
+
+        adapter.setOnItemClickListener(new AttendanceAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String name) {
+                Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return v;
     }
 
     String getRID() {
-        return (getArguments().getString("RID"));
+        return (getArguments().getString("ROTATION_ID"));
     }
 
     String getBuilding() {
@@ -99,28 +126,17 @@ public class AttendanceFragment extends Fragment {
         //INITIALIZE FILTER
         filter = new AttendanceFilter();
         filter.setBuilding(getBuilding());
-        filter.setRID(getRID());
+        filter.setRotationId(getRID());
         filter.setStartMillis(getStartMillis());
         filter.setTab(getTab());
     }
 
     public void handleFilter(){
-        mDatabase = FirebaseDatabase.getInstance().getReference().child(filter.getFilterString());
-
-        mDatabase.keepSynced(true);
-
-        Log.d("FIREBASE", mDatabase.getKey() + "");
-
         recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        if(mDatabase.getKey() == null) {
-            if(filter.getTab() == 1) {
-                empty = (TextView) v.findViewById(R.id.empty_view);
-                empty.setText("No finished attendance yet");
-            }
-            recView.setEmptyView(v.findViewById(R.id.empty_view));
-        }
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(filter.getFilterString());
+        mDatabase.keepSynced(true);
     }
 
     /*private class ShowSpinnerTask extends AsyncTask<Void, Void, Void> {

@@ -88,14 +88,13 @@ public class MainActivity extends AppCompatActivity {
         btnSubmit = (Button) findViewById(R.id.btn_submit);
 
         initializeTabs();
-
         checkUserExist();
         initializeUser();
+        //FirebaseUtils.generateTables(new TableFilters());
     }
 
     public void initializeUser(){
         if(mAuth.getCurrentUser() != null) {
-
             mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -130,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "onCancelled");
                 }
             });
-
         }
     }
 

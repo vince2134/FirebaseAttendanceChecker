@@ -31,6 +31,11 @@ public class AttendanceAdapter extends FirebaseRecyclerAdapter<Attendance, Atten
         });
     }
 
+    @Override
+    public int getItemCount() {
+        return super.getItemCount();
+    }
+
     public static class AttendanceViewHolder extends RecyclerView.ViewHolder{
 
         View mView;
