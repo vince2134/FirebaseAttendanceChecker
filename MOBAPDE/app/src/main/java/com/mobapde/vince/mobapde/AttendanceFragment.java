@@ -1,6 +1,7 @@
 package com.mobapde.vince.mobapde;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobapde.vince.mobapde.support.RecyclerViewEmptySupport;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Vince on 3/22/2017.
@@ -50,6 +54,7 @@ public class AttendanceFragment extends Fragment {
 
         return (f);
     }
+
 
     @Nullable
     @Override
@@ -94,8 +99,11 @@ public class AttendanceFragment extends Fragment {
 
         adapter.setOnItemClickListener(new AttendanceAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String name) {
-                Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
+            public void onItemClick(Attendance model) {
+                //Toast.makeText(getContext(), model.getFacultyName(), Toast.LENGTH_SHORT).show();
+                if(onSetAttendanceListener != null) {
+                    onSetAttendanceListener.onSetAttendance(model);
+                }
             }
         });
 
@@ -139,6 +147,8 @@ public class AttendanceFragment extends Fragment {
         mDatabase.keepSynced(true);
     }
 
+
+
     /*private class ShowSpinnerTask extends AsyncTask<Void, Void, Void> {
         SpinnerFragment mSpinnerFragment;
 
@@ -162,4 +172,13 @@ public class AttendanceFragment extends Fragment {
         }
     }*/
 
+    public interface OnSetAttendanceListener{
+        public void onSetAttendance(Attendance model);
+    }
+
+    private OnSetAttendanceListener onSetAttendanceListener;
+
+    public void setOnSetAttendanceListener(OnSetAttendanceListener onSetAttendanceListener) {
+        this.onSetAttendanceListener = onSetAttendanceListener;
+    }
 }

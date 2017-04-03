@@ -1,9 +1,13 @@
 package com.mobapde.vince.mobapde;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -31,9 +35,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int TAB_NUMBERS = 2;
     public static final int PENDING_TAB = 0;
     public static final int DONE_TAB = 1;
+
+    private static int ATTENDANCE_DETAIL_CODE = 0;
     private static final String TAG = "MainActivity";
 
-    public static Boolean submitted = true;
+    public static Boolean submitted = false;
     private Toolbar toolbar;
     private ViewPager viewPager;
     private ViewPagerAdapter pagerAdapter;
@@ -57,21 +63,25 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth.AuthStateListener mAuthListener;
     DatabaseReference mDatabaseUsers;
 
+    ProgressDialog mProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mProgress = new ProgressDialog(MainActivity.this);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser() == null) {
+                if (firebaseAuth.getCurrentUser() == null) {
                     Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                     startActivity(loginIntent);
-                }
+                } else;
+                    //FirebaseUtils.initialize();
             }
         };
 
@@ -87,23 +97,26 @@ public class MainActivity extends AppCompatActivity {
 
         btnSubmit = (Button) findViewById(R.id.btn_submit);
 
-        initializeTabs();
         checkUserExist();
         initializeUser();
+        initializeTabs();
+        pagerAdapter.notifyDataSetChanged();
         //FirebaseUtils.generateTables(new TableFilters());
     }
 
-    public void initializeUser(){
-        if(mAuth.getCurrentUser() != null) {
+    public void initializeUser() {
+        if (mAuth.getCurrentUser() != null) {
+            primaryFilter.setRotationId("A");
+            primaryFilter.setBuilding("ALL");
+
             mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Log.d(TAG, dataSnapshot.getValue() + "");
 
-                    if(dataSnapshot.getKey().equals("image")) {
+                    if (dataSnapshot.getKey().equals("image")) {
                         profileUrl = dataSnapshot.getValue().toString();
-                    }
-                    else if(dataSnapshot.getKey().equals("name")) {
+                    } else if (dataSnapshot.getKey().equals("name")) {
                         name = dataSnapshot.getValue().toString();
                         initializeDrawer();
                     }
@@ -132,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void initializeTabs(){
+    public void initializeTabs() {
         pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), tabList, TAB_NUMBERS, primaryFilter);
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(pagerAdapter);
@@ -158,10 +171,12 @@ public class MainActivity extends AppCompatActivity {
                 primaryFilter.setTab(position);
                 pagerAdapter.notifyDataSetChanged();
 
-                if(position == PENDING_TAB)
+                if (position == PENDING_TAB)
                     btnSubmit.setVisibility(View.GONE);
-                else if(position == DONE_TAB)
+                else if (position == DONE_TAB)
                     btnSubmit.setVisibility(View.VISIBLE);
+
+                Log.d("PRIMARY FILTER", primaryFilter.getFilterString());
 
                 /*List<Fragment>  fragments = getSupportFragmentManager().getFragments();
                 if(fragments != null){
@@ -179,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void initializeDrawer(){
+    public void initializeDrawer() {
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 
         nView = mNavigationView.getHeaderView(0);
@@ -218,15 +233,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
 
-                switch(menuItem.getItemId()) {
+                switch (menuItem.getItemId()) {
                     case R.id.nav_logout:
                         mAuth.signOut();
                         break;
                     case R.id.nav_allbuildings:
-
+                        primaryFilter.setBuilding("ALL");
                         break;
                     case R.id.nav_gokongwei:
-
+                        primaryFilter.setBuilding("GOKONGWEI");
                         break;
                     case R.id.nav_andrew:
 
@@ -267,7 +282,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkUserExist() {
-        if(mAuth.getCurrentUser() != null) {
+        mProgress.setMessage("Checking if user profile exists...");
+        mProgress.show();
+
+        if (mAuth.getCurrentUser() != null) {
             final String userId = mAuth.getCurrentUser().getUid();
 
             mDatabaseUsers.addValueEventListener(new ValueEventListener() {
@@ -277,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!dataSnapshot.hasChild(userId)) {
                         Intent setupIntent = new Intent(MainActivity.this, SetupAccountActivity.class);
                         setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        mProgress.dismiss();
                         finish();
                         startActivity(setupIntent);
                     }
@@ -288,5 +307,72 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        mProgress.dismiss();
     }
+
+    public class ViewPagerAdapter extends FragmentStatePagerAdapter {
+        CharSequence Titles[];
+        int NumbOfTabs;
+        AttendanceFilter filter;
+
+        private AttendanceFragment al;
+        private int currentTab;
+
+        public ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int mNumbOfTabs, AttendanceFilter filter) {
+            super(fm);
+            this.Titles = mTitles;
+            this.NumbOfTabs = mNumbOfTabs;
+            this.currentTab = 0;
+            this.filter = filter;
+        }
+
+        public Fragment getItem(int position) {
+            Log.d("ViewPagerAdapterFilter", filter.getTab() + "");
+            Log.i("tagg", "ViewPagerAdapter.getItem()   -- position ZERO called");
+            al = AttendanceFragment.newInstance(filter);
+            al.setOnSetAttendanceListener(new AttendanceFragment.OnSetAttendanceListener() {
+                @Override
+                public void onSetAttendance(Attendance model) {
+                    // place code here from fragment
+                    Intent detailActivity = new Intent(getBaseContext(), DetailActivity.class);
+                    detailActivity.putExtra(Attendance.ATTENDANCE, model);
+
+                    startActivityForResult(detailActivity, ATTENDANCE_DETAIL_CODE);
+                }
+            });
+            return al;
+        }
+
+        public AttendanceFragment getFragment() {
+            return this.al;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        public CharSequence getPageTitle(int position) {
+            return Titles[position];
+        }
+
+        public int getCount() {
+            return NumbOfTabs;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == ATTENDANCE_DETAIL_CODE) {
+            Log.d("AttendanceFragment", "SAVE");
+
+            Attendance done = (Attendance) data.getSerializableExtra(DetailActivity.DONE_ATTENDANCE);
+
+            FirebaseUtils.updateAttendance(done);
+        }
+    }
+
 }

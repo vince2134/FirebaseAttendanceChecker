@@ -20,13 +20,13 @@ public class AttendanceAdapter extends FirebaseRecyclerAdapter<Attendance, Atten
 
     @Override
     protected void populateViewHolder(final AttendanceViewHolder viewHolder, Attendance model, int position) {
-        viewHolder.setName(model.getName());
-        viewHolder.mView.setTag(model.getName());
+        viewHolder.setFacultyName(model.getFacultyName());
+        viewHolder.mView.setTag(model);
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = (String) view.getTag();
-                onItemClickListener.onItemClick(name);
+                Attendance model = (Attendance) view.getTag();
+                    onItemClickListener.onItemClick(model);
             }
         });
     }
@@ -46,7 +46,7 @@ public class AttendanceAdapter extends FirebaseRecyclerAdapter<Attendance, Atten
             mView = itemView;
         }
 
-        public void setName(String name){
+        public void setFacultyName(String name){
             TextView tvName = (TextView) mView.findViewById(R.id.lbl_item_text);
             tvName.setText(name);
         }
@@ -59,6 +59,6 @@ public class AttendanceAdapter extends FirebaseRecyclerAdapter<Attendance, Atten
     }
 
     public interface OnItemClickListener {
-        void onItemClick(String name);
+        void onItemClick(Attendance model);
     }
 }

@@ -98,28 +98,18 @@
                         android:layout_marginLeft="20dp"
                         android:textAlignment="center" />
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/rightBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:theme="@style/AppTheme.Button"
-                    android:text="see original prof"/>
-
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/middleLayout"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@color/colorDefault"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingTop="40dp"
                 android:paddingBottom="40dp"
-                android:layout_height="wrap_content"
+                android:paddingTop="40dp"
                 android:weightSum="1">
 
                 <LinearLayout
@@ -129,38 +119,38 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal">
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/abBtn"
                             android:layout_width="65dp"
                             android:layout_height="wrap_content"
-                            android:text="Absent"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Absent"
+                            android:textSize="10sp" />
+
                         <Button
                             android:id="@+id/edBtn"
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
-                            android:text="Early Dismissal"
-                            android:padding="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:padding="15dp"
+                            android:text="Early Dismissal"
+                            android:textSize="10sp" />
 
-                            />
+                        />
                     </LinearLayout>
+
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal">
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/laBtn"
@@ -176,84 +166,83 @@
                             android:id="@+id/prBtn"
                             android:layout_width="70dp"
                             android:layout_height="wrap_content"
-                            android:text="Present"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Present"
+                            android:textSize="10sp" />
+
                         <Button
                             android:id="@+id/sbBtn"
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
-                            android:text="Substitute"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Substitute"
+                            android:textSize="10sp" />
 
                     </LinearLayout>
+
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal">
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/swBtn"
                             android:layout_width="80dp"
                             android:layout_height="50dp"
-                            android:text="Seatwork"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Seatwork"
+                            android:textSize="10sp" />
+
                         <Button
                             android:id="@+id/usBtn"
                             android:layout_width="95dp"
                             android:layout_height="50dp"
-                            android:text="Unscheduled"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Unscheduled"
+                            android:textSize="10sp" />
+
                         <Button
                             android:id="@+id/vrBtn"
                             android:layout_width="95dp"
                             android:layout_height="50dp"
-                            android:text="Vacant Room"
-                            android:paddingTop="15dp"
-                            android:paddingBottom="15dp"
-                            android:textSize="10sp"
                             android:backgroundTint="@color/cardview_light_background"
-                            />
+                            android:paddingBottom="15dp"
+                            android:paddingTop="15dp"
+                            android:text="Vacant Room"
+                            android:textSize="10sp" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        android:orientation="vertical"
                         android:paddingTop="15dp">
 
                         <EditText
                             android:id="@+id/remarkField"
                             android:layout_width="match_parent"
-                            android:textSize="14sp"
+                            android:layout_height="match_parent"
+                            android:hint="Write a remark..."
                             android:inputType="textLongMessage"
                             android:maxLength="200"
-                            android:hint="Write a remark..."
-                            android:layout_height="match_parent" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        android:orientation="vertical"
                         android:paddingTop="15dp">
 
                         <Button
@@ -261,8 +250,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:textSize="14sp"
                             android:text="save"
+                            android:textSize="14sp"
                             android:theme="@style/AppTheme.Button" />
                     </LinearLayout>
 

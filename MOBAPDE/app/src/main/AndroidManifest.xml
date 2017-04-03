@@ -30,6 +30,7 @@
             android:name=".RegisterActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SetupAccountActivity"></activity>
+        <activity android:name=".DetailActivity"></activity>
     </application>
 
 </manifest>
