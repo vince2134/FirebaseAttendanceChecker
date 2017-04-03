@@ -1,9 +1,7 @@
 package com.mobapde.vince.mobapde;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.LightingColorFilter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -343,6 +341,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (currentCode != null){
                     item.setCode(currentCode);
+                    item.setStatus("DONE");
                     item.setRemarks(remark.getText().toString());
                     Intent intent = new Intent();
                     intent.putExtra(DONE_ATTENDANCE, item);

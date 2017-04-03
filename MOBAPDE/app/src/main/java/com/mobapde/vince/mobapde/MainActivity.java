@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     startActivity(loginIntent);
                 } else;
-                    //FirebaseUtils.initialize();
+                    FirebaseUtils.initialize();
             }
         };
 
