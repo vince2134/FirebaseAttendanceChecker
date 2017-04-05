@@ -341,7 +341,6 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (currentCode != null){
                     item.setCode(currentCode);
-                    item.setStatus("DONE");
                     item.setRemarks(remark.getText().toString());
                     Intent intent = new Intent();
                     intent.putExtra(DONE_ATTENDANCE, item);

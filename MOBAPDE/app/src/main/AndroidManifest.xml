@@ -31,6 +31,17 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SetupAccountActivity"></activity>
         <activity android:name=".DetailActivity"></activity>
+
+        <receiver
+            android:name="com.mobapde.vince.mobapde.MainActivity$AlarmReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver
+            android:name="com.mobapde.vince.mobapde.MainActivity$FilterReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
     </application>
 
 </manifest>

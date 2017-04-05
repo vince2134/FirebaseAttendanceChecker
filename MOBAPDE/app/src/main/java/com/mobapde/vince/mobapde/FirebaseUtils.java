@@ -1,18 +1,15 @@
 package com.mobapde.vince.mobapde;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Bryan on 4/1/2017.
@@ -25,6 +22,27 @@ public class FirebaseUtils {
     private static final String TAG = "FirebaseUtils";
     private static Attendance a2;
 
+    private static void addCount(String filter, final int change){
+        DatabaseReference countref = ref.child("filterCounts").child(filter).child("count");
+        countref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                if (mutableData.getValue() == null) {
+                    mutableData.setValue(1);
+                } else {
+                    int count = mutableData.getValue(Integer.class);
+                    mutableData.setValue(count + change);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean success, DataSnapshot dataSnapshot) {
+                // Analyse databaseError for any error during increment
+            }
+        });
+    }
+
     public static void addAttendance(Attendance a){
         List<String> combinationFilters = a.getCombinationFilters();
         if(combinationFilters == null){
@@ -32,9 +50,28 @@ public class FirebaseUtils {
             combinationFilters = a.getCombinationFilters();
         }
         for (String filter: combinationFilters) {
-            DatabaseReference r = ref.child(filter).push();
-            a.addFirebaseId(r.getKey());
-            r.setValue(a);
+            if(!"count".equals(filter)){
+                Log.i(TAG,"going to add to filter `"+filter+"`");
+                DatabaseReference r = ref.child(filter).push();
+                a.addFirebaseId(r.getKey());
+                r.setValue(a);
+
+                addCount(filter,1);
+            }
+        }
+    }
+
+    //only updates all attendances with same id. does not transfer them to tables
+    public static void updateAttendanceByIdOnly(Attendance updatedAttendance){
+        List<String> ids = updatedAttendance.getFirebaseIds();
+        List<String> combinationFilters = updatedAttendance.getCombinationFilters();
+
+        for(String filter: combinationFilters){
+            for (int i = ids.size() - 1; i >= 0; i--) {
+                String id = ids.get(i);
+
+                ref.child(filter).child(id).setValue(updatedAttendance);
+            }
         }
     }
 
@@ -42,13 +79,28 @@ public class FirebaseUtils {
         List<String> ids = updatedAttendance.getFirebaseIds();
         List<String> combinationFilters = updatedAttendance.getCombinationFilters();
 
+        for(String id:ids){
+            Log.i(TAG, "before delete id: "+id);
+        }
+        for(String id:combinationFilters){
+            Log.i(TAG, "before delete filters: "+id);
+        }
+
+
         for(String filter: combinationFilters){
-            for(int i = ids.size()-1; i >= 0; i--){
+            for (int i = ids.size() - 1; i >= 0; i--) {
                 String id = ids.get(i);
+
                 ref.child(filter).child(id).setValue(null);
-                updatedAttendance.removeFirebaseId(id);
+                addCount(filter,-1);
             }
         }
+
+        for(int i = ids.size()-1; i >= 0; i--){
+            String id = ids.get(i);
+            updatedAttendance.removeFirebaseId(id);
+        }
+
         updatedAttendance.setCombinationFilters(null);
         addAttendance(updatedAttendance);
     }

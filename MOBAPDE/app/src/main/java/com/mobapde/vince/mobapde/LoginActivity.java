@@ -36,7 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "k";
 
     EditText etEmail, etPassword;
     TextView tvRegister;

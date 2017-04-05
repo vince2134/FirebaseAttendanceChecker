@@ -2,8 +2,6 @@ package com.mobapde.vince.mobapde;
 
 import android.util.Log;
 
-import com.mobapde.vince.mobapde.Attendance;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,11 +63,22 @@ public class AttendanceUtils {
         if(startTime.equals("0"))
             throw new NullPointerException("rotationId is null");
 
+        Calendar calendar = Calendar.getInstance();
+
+        //replace the current time by the time provided in the parameter
+        calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                0,
+                0,
+                0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         List<String> rotationIdFilters = Arrays.asList(rotationId);
         List<String> statusFilters = Arrays.asList(status);
         List<String> buildingFilters = Arrays.asList(building, ALL_BUILDINGS_FILTER);
-        List<String> startTimeFilters = Arrays.asList(startTime, "_");
+        List<String> startTimeFilters = Arrays.asList(startTime, calendar.getTimeInMillis() + "");
 
         List<String> combinationFilters = new ArrayList<String>();
         a.setMainCombinationFilter(rotationId + "-" + status + "-" + building + "-" + startTime);
