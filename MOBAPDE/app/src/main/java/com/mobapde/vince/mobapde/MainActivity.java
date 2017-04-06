@@ -410,6 +410,7 @@ public class MainActivity extends AppCompatActivity {
                             notifyUser("There are no assigned classes for you yet.");
                             initializeDrawer();
                         } else {
+                            notifyUser("The administrator assigned new classes for you.");
                             initializeTimeSlots();
                             Log.d("HASROTATION", primaryFilter.getFilterString());
                         }
