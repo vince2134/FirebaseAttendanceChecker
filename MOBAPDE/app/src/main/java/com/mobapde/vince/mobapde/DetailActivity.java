@@ -141,7 +141,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = ab.getText().toString();
                 ab.setTextColor(Color.WHITE);
-                ab.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                ab.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -166,7 +166,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = ed.getText().toString();
                 ed.setTextColor(Color.WHITE);
-                ed.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                ed.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ab.setTextColor(Color.BLACK);
                 ab.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -191,7 +191,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = la.getText().toString();
                 la.setTextColor(Color.WHITE);
-                la.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                la.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 ab.setTextColor(Color.BLACK);
@@ -216,7 +216,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = pr.getText().toString();
                 pr.setTextColor(Color.WHITE);
-                pr.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                pr.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -241,7 +241,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = sb.getText().toString();
                 sb.setTextColor(Color.WHITE);
-                sb.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                sb.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -266,7 +266,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = sw.getText().toString();
                 sw.setTextColor(Color.WHITE);
-                sw.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                sw.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -291,7 +291,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = us.getText().toString();
                 us.setTextColor(Color.WHITE);
-                us.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                us.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);
@@ -316,7 +316,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentCode = vr.getText().toString();
                 vr.setTextColor(Color.WHITE);
-                vr.getBackground().setColorFilter(Color.rgb(10, 153, 61), PorterDuff.Mode.MULTIPLY);
+                vr.getBackground().setColorFilter(Color.rgb(27, 32, 35), PorterDuff.Mode.MULTIPLY);
                 ed.setTextColor(Color.BLACK);
                 ed.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 la.setTextColor(Color.BLACK);

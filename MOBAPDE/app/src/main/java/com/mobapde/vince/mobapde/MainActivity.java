@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private static String startTime;
     private static String endTime;
     private String name;
+    private Boolean initialized = false;
 
     String userId;
 
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setTitle("Attendance");
-        toolbar.setTitleTextColor(Color.rgb(8, 120, 48));
+        toolbar.setTitleTextColor(Color.BLACK);
         toolbar.setBackgroundColor(Color.WHITE);
 
         btnSubmit = (Button) findViewById(R.id.btn_submit);
@@ -389,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
                         if(primaryFilter.getRotationId().equals("_")) {
                             notifyUser("There are no assigned classes for you yet. Please contact the administrator for help.");
                             initializeDrawer();
+                            initialized = true;
                         } else {
                             initializeTimeSlots();
                             Log.d("HASROTATION", primaryFilter.getFilterString());
@@ -490,8 +492,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setMenuCounter(@IdRes int itemId, int count) {
+        Log.d("Count", count + "");
+
         TextView view = (TextView) mNavigationView.getMenu().findItem(itemId).getActionView();
-        view.setText(count > 0 ? String.valueOf(count) : null);
+        view.setText(count >= 0 ? String.valueOf(count) : null);
     }
 
     public void initializeBuildingIds() {
@@ -581,9 +585,15 @@ public class MainActivity extends AppCompatActivity {
 
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 
-        for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
-            mNavigationView.getMenu().getItem(i).setVisible(false);
-            Log.d(TAG, mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+        /*if(!initialized) {
+            Log.d("INITIALIZE", "YE");
+            mNavigationView.setCheckedItem(R.id.nav_allbuildings);
+            ((TextView) mNavigationView.getMenu().getItem(0).getSubMenu().getItem(0).getActionView()).setTextColor(Color.WHITE);
+        }*/
+
+        for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
+            mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(false);
+            Log.d(TAG + "Buildings", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
         }
 
         //CALL ONLY WHEN THERE IS ASSIGNED ROTOTATION ID
@@ -593,23 +603,38 @@ public class MainActivity extends AppCompatActivity {
             for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
                 Log.d("FILTERARRAY", filter2 + "");
 
+            ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
+            primaryFilter.setStartMillis(calendar.getTimeInMillis());
+            Log.d("PRIMARYFILTERSTRINGB", primaryFilter.getFilterString());
+            int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
+            ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
+            try {
+                int curCount = filterCounts2.get(indexOfFilterString);
+
+                Log.d("INDEX", indexOfFilterString + "");
+
+                setMenuCounter(buildingIDs.get(0), Math.abs(curCount));
+            } catch (Exception ex) {
+
+            }
+
             for (String building : buildings) {
-                for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
-                    if (building.equals(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""))) {
-                        mNavigationView.getMenu().getItem(i).setVisible(true);
-                        primaryFilter.setBuilding(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""));
+                for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
+                    if (building.equals(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
+                        mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
+                        primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
                         primaryFilter.setStartMillis(calendar.getTimeInMillis());
 
-                        ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
+                        filterStrings = (ArrayList<String>) filterCounts.get(0);
                         Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
-                        int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                        ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
+                        indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
+                        filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
                         try {
                             int curCount = filterCounts2.get(indexOfFilterString);
 
                             Log.d("INDEX", indexOfFilterString + "");
 
-                            setMenuCounter(buildingIDs.get(i), curCount);
+                            setMenuCounter(buildingIDs.get(i), Math.abs(curCount));
                         } catch (Exception ex) {
 
                         }
@@ -656,35 +681,48 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
 
+                for(int i = 0; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++){
+                    ((TextView)mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getActionView()).setTextColor(Color.rgb(109, 109, 109));
+                }
+
                 switch (menuItem.getItemId()) {
                     case R.id.nav_logout:
                         mAuth.signOut();
                         break;
                     case R.id.nav_allbuildings:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ALL");
                         break;
                     case R.id.nav_gokongwei:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("GOKONGWEI");
                         break;
                     case R.id.nav_andrew:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ANDREW");
                         break;
                     case R.id.nav_lasallehall:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("LASALLEHALL");
                         break;
                     case R.id.nav_miguel:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("MIGUEL");
                         break;
                     case R.id.nav_razon:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("RAZON");
                         break;
                     case R.id.nav_saintjoseph:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("SAINTJOSEPH");
                         break;
                     case R.id.nav_yuchengco:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("YUCHENGCO");
                         break;
                     case R.id.nav_velasco:
+                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("VELASCO");
                         break;
                     case R.id.nav_help:
@@ -692,13 +730,12 @@ public class MainActivity extends AppCompatActivity {
                         help.setClass(getBaseContext(), HelpActivity.class);
                         startActivity(help);
                         break;
-                    case R.id.report_uc:
-
-                        break;
                 }
-                pagerAdapter.notifyDataSetChanged();
 
                 ((DrawerLayout) findViewById(R.id.DrawerLayout)).closeDrawers();
+
+                if(menuItem.getItemId() != R.id.nav_help)
+                    pagerAdapter.notifyDataSetChanged();
                 return true;
             }
         });

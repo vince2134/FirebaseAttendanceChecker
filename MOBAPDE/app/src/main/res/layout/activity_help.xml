@@ -12,9 +12,9 @@
         android:id="@+id/helpToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorDefault"
         android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:theme="@style/AppTheme"
         app:titleEnabled="false" />
 
     <ScrollView

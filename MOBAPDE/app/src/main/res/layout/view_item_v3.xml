@@ -14,7 +14,6 @@
         android:background="@color/colorDefault"
         android:minHeight="?attr/actionBarSize"
         android:title="Class Details"
-        app:titleTextColor="@color/colorPrimary"
         android:id="@+id/detailToolbar" />
 
     <ScrollView

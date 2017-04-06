@@ -2,84 +2,85 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group
-        android:id="@+id/nav_group_building"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_allbuildings"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_allbuildings"
-            app:actionLayout="@layout/menu_counter" />
+    <item android:title="Current Buildings">
+        <menu>
+            <group
+                android:id="@+id/nav_group_building"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_allbuildings"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_allbuildings"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_lasallehall"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_lasallehall"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_lasallehall"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_lasallehall"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_yuchengco"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_yuchengco"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_yuchengco"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_yuchengco"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_saintjoseph"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_saintjoseph"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_saintjoseph"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_saintjoseph"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_velasco"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_velasco"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_velasco"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_velasco"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_miguel"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_miguel"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_miguel"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_miguel"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_gokongwei"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_gokongwei"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_gokongwei"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_gokongwei"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_andrew"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_andrew"
-            app:actionLayout="@layout/menu_counter" />
+                <item
+                    android:id="@+id/nav_andrew"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_andrew"
+                    app:actionLayout="@layout/menu_counter" />
 
-        <item
-            android:id="@+id/nav_razon"
-            android:icon="@drawable/ic_domain_black_36dp"
-            android:title="@string/nav_razon"
-            app:actionLayout="@layout/menu_counter" />
-    </group>
+                <item
+                    android:id="@+id/nav_razon"
+                    android:icon="@drawable/ic_domain_black_36dp"
+                    android:title="@string/nav_razon"
+                    app:actionLayout="@layout/menu_counter" />
+            </group>
+        </menu>
+    </item>
 
-    <group
-        android:id="@+id/nav_group_report"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/report_uc"
-            android:icon="@drawable/ic_assignment_black_48dp"
-            android:title="Report UC" />
-    </group>
+    <item android:title="Settings">
+        <menu>
+            <group
+                android:id="@+id/nav_group_settings"
 
-    <group
-        android:id="@+id/nav_group_settings"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_help"
-            android:icon="@drawable/ic_help_black_24dp"
-            android:title="@string/nav_help" />
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_help"
+                    android:icon="@drawable/ic_help_black_24dp"
+                    android:title="@string/nav_help" />
 
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_input_black_24dp"
-            android:title="@string/nav_logout" />
-    </group>
+                <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_input_black_24dp"
+                    android:title="@string/nav_logout" />
+            </group>
+        </menu>
+    </item>
+
 </menu>
