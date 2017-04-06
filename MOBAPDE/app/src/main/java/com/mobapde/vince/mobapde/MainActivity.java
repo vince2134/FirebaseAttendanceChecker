@@ -44,9 +44,6 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -73,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private static String startTime;
     private static String endTime;
     private String name;
+
+    String userId;
 
     NavigationView mNavigationView;
     DrawerLayout drawer;                                  // Declaring DrawerLayout
@@ -101,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     int count = 0;
 
     public static Context mainContext;
+    public static Boolean setupAccount = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                     startActivity(loginIntent);
-                } else;
-                    FirebaseUtils.initialize();
+                } else ;
+                FirebaseUtils.initialize();
             }
         };
 
@@ -162,9 +162,9 @@ public class MainActivity extends AppCompatActivity {
         //FirebaseUtils.generateTables(new TableFilters());
     }
 
-    public static Boolean timeSlotExists(TimeSlot timeSlot){
+    public static Boolean timeSlotExists(TimeSlot timeSlot) {
 
-        if(!timeSlots.isEmpty()) {
+        if (!timeSlots.isEmpty()) {
             for (int i = 0; i < timeSlots.size(); i++) {
                 if (timeSlot.getStartMillis() == timeSlots.get(i).getStartMillis())
                     return true;
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void initializeTimeSlots(){
+    public void initializeTimeSlots() {
         timeSlots.clear();
 
         mDatabaseTimeSlots.addChildEventListener(new ChildEventListener() {
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
                 TimeSlot curTimeSlot = new TimeSlot();
 
-                for(DataSnapshot attendance: dataSnapshot.getChildren()) {
+                for (DataSnapshot attendance : dataSnapshot.getChildren()) {
                     if (attendance.getKey().equals("endTime")) {
                         endTime = attendance.getValue().toString();
                         curTimeSlot.setEndMillis(Long.parseLong(endTime));
@@ -194,13 +194,13 @@ public class MainActivity extends AppCompatActivity {
                         curTimeSlot.setStartMillis(Long.parseLong(startTime));
                         Log.d("START_TIME", attendance.getValue().toString());
                     } else if (attendance.getKey().equals("building")) {
-                        if(!buildings.contains(attendance.getValue().toString())){
+                        if (!buildings.contains(attendance.getValue().toString())) {
                             buildings.add(attendance.getValue().toString());
                         }
                     }
                 }
 
-                if(!timeSlotExists(curTimeSlot)) {
+                if (!timeSlotExists(curTimeSlot)) {
                     timeSlots.add(curTimeSlot);
                     Log.d("ADDED", curTimeSlot.getStartMillis() + "");
                 }
@@ -233,12 +233,17 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseTimeSlots.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("TIMESLOT_FINISH", dataSnapshot.getChildrenCount() + "");
-                //initializeDrawer();
-                updateFilterCounts();
-                primaryFilter.setStartMillis(-1);
-                initializeNotifications();
-                pagerAdapter.notifyDataSetChanged();
+                try {
+                    Log.d("TIMESLOT_FINISH", dataSnapshot.getChildrenCount() + "");
+                    //initializeDrawer();
+                    updateFilterCounts();
+                    primaryFilter.setStartMillis(-1);
+                    initializeNotifications();
+                    pagerAdapter.notifyDataSetChanged();
+                }
+                catch(Exception e){
+
+                }
             }
 
             @Override
@@ -248,15 +253,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static void initializeNotifications(){
+    public static void initializeNotifications() {
         Log.d("TIMESLOT_INIT", timeSlots.size() + "");
         notifications.clear();
 
-        for(TimeSlot t: timeSlots){
+        for (TimeSlot t : timeSlots) {
             Log.d("TIMESLOT_ARRAY", t.getStartMillis() + "");
         }
 
-        if(!timeSlots.isEmpty()) {
+        if (!timeSlots.isEmpty()) {
             Integer withinSlot = timeSlots.get(0).withinTimeSlot();
 
             if (withinSlot == null)
@@ -290,12 +295,11 @@ public class MainActivity extends AppCompatActivity {
 
                     AlarmManager alarmManager = (AlarmManager) mainContext.getSystemService(Service.ALARM_SERVICE);
 
-                    if(timeSlots.size() > 1) {
+                    if (timeSlots.size() > 1) {
                         c.setTimeInMillis(timeSlots.get(1).getStartMillis());
                         nextClass = "The next classes will start at " + formatter.format(c.getTime()) + ".";
                         //notifications.add(curTimeSlotFormat + " classes have been filtered. " + nextClass);
-                    }
-                    else {
+                    } else {
                         nextClass = "There are no classes left for today.";
                         //notifications.add("There are no classes left for today.");
                     }
@@ -324,8 +328,7 @@ public class MainActivity extends AppCompatActivity {
                     startInitializer();
                 }
             }
-        }
-        else {
+        } else {
             Toast.makeText(mainContext, "No attendance retrieved.", Toast.LENGTH_LONG).show();
             notifications.add("No attendance retrieved.");
             startInitializer();
@@ -357,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
                         profileUrl = dataSnapshot.getValue().toString();
                     } else if (dataSnapshot.getKey().equals("name")) {
                         name = dataSnapshot.getValue().toString();
+                        //if(setupAccount == true)
                         initializeTimeSlots();
                     }
                 }
@@ -435,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void updateDrawerCounter(){
+    public void updateDrawerCounter() {
 
     }
 
@@ -444,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
         view.setText(count > 0 ? String.valueOf(count) : null);
     }
 
-    public void initializeBuildingIds(){
+    public void initializeBuildingIds() {
         buildingIDs.add(R.id.nav_allbuildings);
         buildingIDs.add(R.id.nav_lasallehall);
         buildingIDs.add(R.id.nav_yuchengco);
@@ -456,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
         buildingIDs.add(R.id.nav_razon);
     }
 
-    public void updateFilterCounts(){
+    public void updateFilterCounts() {
         filterCounts.clear();
         filterCounts.add(new ArrayList<Integer>());
         filterCounts.add(new ArrayList<String>());
@@ -468,12 +472,12 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("FILTERCOUNTS", dataSnapshot.getKey().toString());
 
-                ((ArrayList<String>)filterCounts.get(0)).add(dataSnapshot.getKey().toString());
+                ((ArrayList<String>) filterCounts.get(0)).add(dataSnapshot.getKey().toString());
 
-                for(DataSnapshot filter: dataSnapshot.getChildren()){
-                    if(filter.getKey().equals("count"))
+                for (DataSnapshot filter : dataSnapshot.getChildren()) {
+                    if (filter.getKey().equals("count"))
                         Log.d("FILTERCOUNTS", filter.getValue().toString());
-                        ((ArrayList<Integer>)filterCounts.get(1)).add(Integer.parseInt(filter.getValue().toString()));
+                    ((ArrayList<Integer>) filterCounts.get(1)).add(Integer.parseInt(filter.getValue().toString()));
                 }
             }
 
@@ -501,7 +505,11 @@ public class MainActivity extends AppCompatActivity {
         filterCountsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                initializeDrawer();
+                try {
+                    initializeDrawer();
+                } catch(Exception e){
+
+                }
             }
 
             @Override
@@ -527,35 +535,34 @@ public class MainActivity extends AppCompatActivity {
 
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 
-        for(int i = 1; i < mNavigationView.getMenu().size() - 3; i++){
+        for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
             mNavigationView.getMenu().getItem(i).setVisible(false);
             Log.d(TAG, mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
         }
 
-        for(String filter: (ArrayList<String>)filterCounts.get(0))
+        for (String filter : (ArrayList<String>) filterCounts.get(0))
             Log.d("FILTERARRAY", filter);
-        for(Integer filter2: (ArrayList<Integer>)filterCounts.get(1))
+        for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
             Log.d("FILTERARRAY", filter2 + "");
 
-        for(String building: buildings){
-            for(int i = 1; i < mNavigationView.getMenu().size() - 3; i++){
-                if(building.equals(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""))) {
+        for (String building : buildings) {
+            for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
+                if (building.equals(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""))) {
                     mNavigationView.getMenu().getItem(i).setVisible(true);
                     primaryFilter.setBuilding(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""));
                     primaryFilter.setStartMillis(calendar.getTimeInMillis());
 
-                    ArrayList<String> filterStrings = (ArrayList<String>)filterCounts.get(0);
+                    ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
                     Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
                     int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                    ArrayList<Integer> filterCounts2 = (ArrayList<Integer>)filterCounts.get(1);
+                    ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
                     try {
                         int curCount = filterCounts2.get(indexOfFilterString);
 
                         Log.d("INDEX", indexOfFilterString + "");
 
                         setMenuCounter(buildingIDs.get(i), curCount);
-                    }
-                    catch(Exception ex){
+                    } catch (Exception ex) {
 
                     }
                 }
@@ -654,23 +661,48 @@ public class MainActivity extends AppCompatActivity {
         mProgress.show();
 
         if (mAuth.getCurrentUser() != null) {
-            final String userId = mAuth.getCurrentUser().getUid();
+            userId = mAuth.getCurrentUser().getUid();
+            DatabaseReference curUser = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
-            mDatabaseUsers.addValueEventListener(new ValueEventListener() {
+            curUser.addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Log.d("USER", dataSnapshot.getKey());
+                    Log.d("USER", dataSnapshot.getValue() + "");
 
-                    if (!dataSnapshot.hasChild(userId)) {
-                        Intent setupIntent = new Intent(MainActivity.this, SetupAccountActivity.class);
-                        setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        mProgress.dismiss();
-                        finish();
-                        startActivity(setupIntent);
+                    if(dataSnapshot.getKey().equals("image")){
+                        if(dataSnapshot.getValue().toString().equals("default")){
+                            Intent setupIntent = new Intent(MainActivity.this, SetupAccountActivity.class);
+                            setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            mProgress.dismiss();
+                            finish();
+                            startActivity(setupIntent);
+                        }
+                        else {
+                            try {
+                                Log.d("SETUP", "SETUP");
+                                initializeUser();
+                                initializeTabs();
+                            } catch(Exception e){
+
+                            }
+                        }
                     }
-                    else {
-                        initializeUser();
-                        initializeTabs();
-                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
                 }
 
                 @Override
@@ -743,11 +775,10 @@ public class MainActivity extends AppCompatActivity {
 
             Attendance attendance = (Attendance) data.getSerializableExtra(DetailActivity.DONE_ATTENDANCE);
 
-            if(attendance.getStatus().equals("PENDING")) {
+            if (attendance.getStatus().equals("PENDING")) {
                 attendance.setStatus("DONE");
                 FirebaseUtils.updateAttendance(attendance);
-            }
-            else
+            } else
                 FirebaseUtils.updateAttendanceByIdOnly(attendance);
 
             pagerAdapter.notifyDataSetChanged();
@@ -755,42 +786,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void scheduleFilterTask(){
-        Calendar today = Calendar.getInstance();
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.set(Calendar.SECOND, 0);
-
-        Timer timer = new Timer();
-        timer.schedule(new AttendanceScheduler(getBaseContext()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
-    }
-
-    private class AttendanceScheduler extends TimerTask
-    {
-        private Context c;
-
-        public AttendanceScheduler(Context c){
-            this.c = c;
-        }
-
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d("TIMERTASK", "tick");
-                    initializeTimeSlots();
-                }
-            });
-        }
-    }
-
-    public static void filterTime(long timeSlot){
+    public static void filterTime(long timeSlot) {
         primaryFilter.setStartMillis(timeSlot);
         pagerAdapter.notifyDataSetChanged();
     }
 
-    public static void startInitializer(){
+    public static void startInitializer() {
         AlarmManager alarmManager = (AlarmManager) mainContext.getSystemService(Service.ALARM_SERVICE);
         Intent intentAlarm = new Intent(mainContext, FilterReceiver.class);
 
@@ -806,7 +807,7 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingAlarm);
     }
 
-    public static void reinitializeTimeSlots(){
+    public static void reinitializeTimeSlots() {
         timeSlots.clear();
 
         Calendar calendar = Calendar.getInstance();
@@ -832,7 +833,7 @@ public class MainActivity extends AppCompatActivity {
 
                 TimeSlot curTimeSlot = new TimeSlot();
 
-                for(DataSnapshot attendance: dataSnapshot.getChildren()) {
+                for (DataSnapshot attendance : dataSnapshot.getChildren()) {
                     if (attendance.getKey().equals("endTime")) {
                         endTime = attendance.getValue().toString();
                         curTimeSlot.setEndMillis(Long.parseLong(endTime));
@@ -841,13 +842,13 @@ public class MainActivity extends AppCompatActivity {
                         curTimeSlot.setStartMillis(Long.parseLong(startTime));
                         Log.d("START_TIME", attendance.getValue().toString());
                     } else if (attendance.getKey().equals("building")) {
-                        if(!buildings.contains(attendance.getValue().toString())){
+                        if (!buildings.contains(attendance.getValue().toString())) {
                             buildings.add(attendance.getValue().toString());
                         }
                     }
                 }
 
-                if(!timeSlotExists(curTimeSlot)) {
+                if (!timeSlotExists(curTimeSlot)) {
                     timeSlots.add(curTimeSlot);
                     Log.d("ADDED", curTimeSlot.getStartMillis() + "");
                 }
@@ -934,13 +935,13 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("ON_RECEIVE", "RECEIVED");
 
-            if(!timeSlots.isEmpty())
+            if (!timeSlots.isEmpty())
                 setNewAlarm(context);
             else
                 startInitializer();
         }
 
-        public void setNewAlarm(Context context){
+        public void setNewAlarm(Context context) {
             // Initialize current time slot in calendar
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(timeSlots.get(0).getStartMillis());
@@ -952,12 +953,11 @@ public class MainActivity extends AppCompatActivity {
             SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
             curTimeSlotFormat = formatter.format(c.getTime());
 
-            if(timeSlots.size() > 1) {
+            if (timeSlots.size() > 1) {
                 c.setTimeInMillis(timeSlots.get(1).getStartMillis());
                 nextClass = "The next classes will start at " + formatter.format(c.getTime()) + ".";
                 filterTime(-1);
-            }
-            else
+            } else
                 nextClass = "There are no classes left for today.";
 
             Intent intentAlarm = new Intent(context, AlarmReceiver.class);
@@ -975,7 +975,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void notifyUser(String text){
+    public static void notifyUser(String text) {
         NotificationManager notifManager = (NotificationManager) mainContext.getSystemService(Service.NOTIFICATION_SERVICE);
 
         Bitmap bitmap = BitmapFactory.decodeResource(mainContext.getResources(), R.drawable.check2);
@@ -1000,14 +1000,14 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
 
-        for(String n: notifications){
+        for (String n : notifications) {
             style.addLine(n);
         }
 
         style.setSummaryText("You have new notifications.")
                 .setBigContentTitle("Attendance Checker");
 
-        if(!notifications.isEmpty()) {
+        if (!notifications.isEmpty()) {
             Notification notif = new NotificationCompat.Builder(mainContext)
                     .setContentTitle("Attendance Checker")
                     .setContentText(notifications.get(notifications.size() - 1))
@@ -1023,9 +1023,9 @@ public class MainActivity extends AppCompatActivity {
                 notifManager.notify(NOTIFY_ANNOUNCEMENT, notif);
         }
 
-        if(!text.isEmpty() && notifications.isEmpty())
+        if (!text.isEmpty() && notifications.isEmpty())
             notifManager.notify(NOTIFY_ANNOUNCEMENT, notifBuilder.build());
-        if (text.isEmpty() && notifications.size() == 1){
+        if (text.isEmpty() && notifications.size() == 1) {
             notifBuilder.setContentText(notifications.get(0))
                     .setTicker(notifications.get(0))
                     .setStyle(new Notification.BigPictureStyle().bigPicture(bitmap))

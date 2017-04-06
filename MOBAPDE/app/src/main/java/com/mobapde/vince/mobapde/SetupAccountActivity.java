@@ -98,6 +98,7 @@ public class SetupAccountActivity extends AppCompatActivity {
                     mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                     startActivity(mainIntent);
+                    MainActivity.setupAccount = true;
                 }
             });
         }
@@ -137,7 +138,7 @@ public class SetupAccountActivity extends AppCompatActivity {
         super.onBackPressed();
 
         if(mAuth.getCurrentUser() != null) {
-            mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).removeValue();
+            //mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).removeValue();
             mAuth.signOut();
         }
         /*Intent loginIntent = new Intent(SetupAccountActivity.this, LoginActivity.class);

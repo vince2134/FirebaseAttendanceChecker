@@ -226,7 +226,6 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                         startActivity(setupIntent);
                     }
-
                 }
 
                 @Override
