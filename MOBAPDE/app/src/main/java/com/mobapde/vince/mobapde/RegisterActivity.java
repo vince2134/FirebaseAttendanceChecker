@@ -84,6 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                         currentUser.child("name").setValue("default");
                         currentUser.child("image").setValue("default");
+                        currentUser.child("rotationId").setValue("_");
 
                         mProgress.dismiss();
 

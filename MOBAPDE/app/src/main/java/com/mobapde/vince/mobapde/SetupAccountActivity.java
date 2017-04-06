@@ -91,6 +91,7 @@ public class SetupAccountActivity extends AppCompatActivity {
 
                     mDatabaseUsers.child(userId).child("name").setValue(name);
                     mDatabaseUsers.child(userId).child("image").setValue(downloadUri);
+                    mDatabaseUsers.child(userId).child("rotationId").setValue("_");
 
                     mProgress.dismiss();
 

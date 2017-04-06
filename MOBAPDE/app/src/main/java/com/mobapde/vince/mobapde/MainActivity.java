@@ -165,7 +165,24 @@ public class MainActivity extends AppCompatActivity {
         //udpateFilterCounts();
 
         mProgress.dismiss();
+        //mAuth.signOut();
         //FirebaseUtils.generateTables(new TableFilters());
+    }
+
+    public void setCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+
+        //replace the current time by the time provided in the parameter
+        calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                0,
+                0,
+                0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        primaryFilter.setStartMillis(calendar.getTimeInMillis());
     }
 
     public static Boolean timeSlotExists(TimeSlot timeSlot) {
@@ -182,6 +199,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeTimeSlots() {
         timeSlots.clear();
+
+        //SETS TIME FILTER TO CURRENT DATE WITHOUT TIME TO RETRIEVE UNIQUE TIME SLOTS
+        setCurrentDate();
+
+        mDatabaseTimeSlots = FirebaseDatabase.getInstance().getReference().child(primaryFilter.getFilterString());
+        mDatabaseTimeSlots.orderByChild("startTime");
 
         mDatabaseTimeSlots.addChildEventListener(new ChildEventListener() {
             @Override
@@ -246,8 +269,7 @@ public class MainActivity extends AppCompatActivity {
                     primaryFilter.setStartMillis(-1);
                     initializeNotifications();
                     pagerAdapter.notifyDataSetChanged();
-                }
-                catch(Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -349,13 +371,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeUser() {
         if (mAuth.getCurrentUser() != null) {
-            primaryFilter.setRotationId("A");
+            //primaryFilter.setRotationId(mAuth.getCurrentUser().);
             primaryFilter.setBuilding("ALL");
-
-            mDatabaseTimeSlots = FirebaseDatabase.getInstance().getReference().child(primaryFilter.getFilterString());
-            mDatabaseTimeSlots.orderByChild("startTime");
-
-            Log.d("PRIMARYFILTER", primaryFilter.getFilterString());
 
             mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
                 @Override
@@ -366,14 +383,35 @@ public class MainActivity extends AppCompatActivity {
                         profileUrl = dataSnapshot.getValue().toString();
                     } else if (dataSnapshot.getKey().equals("name")) {
                         name = dataSnapshot.getValue().toString();
-                        //if(setupAccount == true)
-                        initializeTimeSlots();
+                    } else if (dataSnapshot.getKey().equals("rotationId")) {
+                        primaryFilter.setRotationId(dataSnapshot.getValue().toString());
+
+                        if(primaryFilter.getRotationId().equals("_")) {
+                            notifyUser("There are no assigned classes for you yet. Please contact the administrator for help.");
+                            initializeDrawer();
+                        } else {
+                            initializeTimeSlots();
+                            Log.d("HASROTATION", primaryFilter.getFilterString());
+                        }
                     }
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                     Log.d(TAG, "onChildChanged");
+
+                    if (dataSnapshot.getKey().equals("rotationId")) {
+                        primaryFilter.setRotationId(dataSnapshot.getValue().toString());
+
+                        if(primaryFilter.getRotationId().equals("_")) {
+                            //Log.d("PRIMARYFILTER", primaryFilter.getFilterString());
+                            notifyUser("There are no assigned classes for you yet.");
+                            initializeDrawer();
+                        } else {
+                            initializeTimeSlots();
+                            Log.d("HASROTATION", primaryFilter.getFilterString());
+                        }
+                    }
                 }
 
                 @Override
@@ -515,7 +553,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     initializeDrawer();
-                } catch(Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -548,30 +586,33 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
         }
 
-        for (String filter : (ArrayList<String>) filterCounts.get(0))
-            Log.d("FILTERARRAY", filter);
-        for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
-            Log.d("FILTERARRAY", filter2 + "");
+        //CALL ONLY WHEN THERE IS ASSIGNED ROTOTATION ID
+        if(!primaryFilter.getRotationId().equals("_")) {
+            for (String filter : (ArrayList<String>) filterCounts.get(0))
+                Log.d("FILTERARRAY", filter);
+            for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
+                Log.d("FILTERARRAY", filter2 + "");
 
-        for (String building : buildings) {
-            for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
-                if (building.equals(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""))) {
-                    mNavigationView.getMenu().getItem(i).setVisible(true);
-                    primaryFilter.setBuilding(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""));
-                    primaryFilter.setStartMillis(calendar.getTimeInMillis());
+            for (String building : buildings) {
+                for (int i = 1; i < mNavigationView.getMenu().size() - 3; i++) {
+                    if (building.equals(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""))) {
+                        mNavigationView.getMenu().getItem(i).setVisible(true);
+                        primaryFilter.setBuilding(mNavigationView.getMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", ""));
+                        primaryFilter.setStartMillis(calendar.getTimeInMillis());
 
-                    ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
-                    Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
-                    int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                    ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
-                    try {
-                        int curCount = filterCounts2.get(indexOfFilterString);
+                        ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
+                        Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
+                        int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
+                        ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
+                        try {
+                            int curCount = filterCounts2.get(indexOfFilterString);
 
-                        Log.d("INDEX", indexOfFilterString + "");
+                            Log.d("INDEX", indexOfFilterString + "");
 
-                        setMenuCounter(buildingIDs.get(i), curCount);
-                    } catch (Exception ex) {
+                            setMenuCounter(buildingIDs.get(i), curCount);
+                        } catch (Exception ex) {
 
+                        }
                     }
                 }
             }
@@ -677,20 +718,19 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("USER", dataSnapshot.getKey());
                     Log.d("USER", dataSnapshot.getValue() + "");
 
-                    if(dataSnapshot.getKey().equals("image")){
-                        if(dataSnapshot.getValue().toString().equals("default")){
+                    if (dataSnapshot.getKey().equals("image")) {
+                        if (dataSnapshot.getValue().toString().equals("default")) {
                             Intent setupIntent = new Intent(MainActivity.this, SetupAccountActivity.class);
                             setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             mProgress.dismiss();
                             finish();
                             startActivity(setupIntent);
-                        }
-                        else {
+                        } else {
                             try {
                                 Log.d("SETUP", "SETUP");
                                 initializeUser();
                                 initializeTabs();
-                            } catch(Exception e){
+                            } catch (Exception e) {
 
                             }
                         }
@@ -980,6 +1020,7 @@ public class MainActivity extends AppCompatActivity {
 
             timeSlots.remove(0);
         }
+
     }
 
     public static void notifyUser(String text) {

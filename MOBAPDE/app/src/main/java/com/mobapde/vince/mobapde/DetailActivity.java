@@ -156,8 +156,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -181,8 +181,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -206,8 +206,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -231,8 +231,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -256,8 +256,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -281,8 +281,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -306,8 +306,8 @@ public class DetailActivity extends AppCompatActivity {
                 ab.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 vr.setTextColor(Color.BLACK);
                 vr.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -331,8 +331,8 @@ public class DetailActivity extends AppCompatActivity {
                 us.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
                 ab.setTextColor(Color.BLACK);
                 ab.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
-                submitButton.setTextColor(Color.WHITE);
+                //submitButton.setBackgroundColor(Color.rgb(8, 120, 48));
+                //submitButton.setTextColor(Color.WHITE);
                 submitButton.setEnabled(true);
             }
         });
@@ -351,8 +351,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        submitButton.setBackgroundColor(Color.GRAY);
-        submitButton.setTextColor(Color.WHITE);
+        //submitButton.setBackgroundColor(Color.GRAY);
+        //submitButton.setTextColor(Color.WHITE);
         submitButton.setEnabled(false);
     }
 
