@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -150,8 +151,13 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setTitle("Attendance");
+        toolbar.setTitleTextColor(Color.rgb(8, 120, 48));
+        toolbar.setBackgroundColor(Color.WHITE);
 
         btnSubmit = (Button) findViewById(R.id.btn_submit);
+        btnSubmit.setBackgroundColor(Color.WHITE);
+        btnSubmit.setElevation(100);
+        btnSubmit.setTextColor(Color.rgb(8, 120, 48));
 
         checkUserExist();
         //initializeUser();
@@ -395,11 +401,13 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(0);
         tabSlider = (SlidingTabLayout) findViewById(R.id.tabs);
         tabSlider.setDistributeEvenly(true);
+        tabSlider.setBackgroundColor(Color.WHITE);
         tabSlider.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             public int getIndicatorColor(int position) {
                 return ContextCompat.getColor(getApplicationContext(), R.color.cardview_light_background);
             }
         });
+
         tabSlider.setViewPager(viewPager);
 
         tabSlider.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -602,7 +610,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
 
         emptyView = (TextView) findViewById(R.id.empty_view);
-
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
