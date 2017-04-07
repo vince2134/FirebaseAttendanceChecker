@@ -917,6 +917,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void filterTime(long timeSlot) {
         primaryFilter.setStartMillis(timeSlot);
+        Log.d("CUR_FILTER", primaryFilter.getFilterString());
         pagerAdapter.notifyDataSetChanged();
     }
 
@@ -1073,6 +1074,8 @@ public class MainActivity extends AppCompatActivity {
 
             notifyUser(intent.getStringExtra("CUR_TIME_SLOT") + " classes have been filtered. " + intent.getStringExtra("NEXT_CLASS"));
 
+            Log.d("CUR_TIME_LONG", intent.getLongExtra("CUR_TIME_LONG", -1) + "");
+
             MainActivity.filterTime(intent.getLongExtra("CUR_TIME_LONG", -1));
 
             Log.d("ON_RECEIVE", "RECEIVED");
@@ -1098,7 +1101,7 @@ public class MainActivity extends AppCompatActivity {
             if (timeSlots.size() > 1) {
                 c.setTimeInMillis(timeSlots.get(1).getStartMillis());
                 nextClass = "The next classes will start at " + formatter.format(c.getTime()) + ".";
-                filterTime(-1);
+                //filterTime(-1);
             } else
                 nextClass = "There are no classes left for today.";
 
