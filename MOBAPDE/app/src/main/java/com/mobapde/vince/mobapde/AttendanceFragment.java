@@ -1,7 +1,6 @@
 package com.mobapde.vince.mobapde;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DataSnapshot;
@@ -20,9 +18,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobapde.vince.mobapde.support.RecyclerViewEmptySupport;
-import com.theartofdev.edmodo.cropper.CropImageView;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Vince on 3/22/2017.
@@ -71,7 +66,7 @@ public class AttendanceFragment extends Fragment {
         handleFilter();
 
         if(getContext() != null) {
-            adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase);
+            adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase, getContext());
 
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

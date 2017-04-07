@@ -47,7 +47,7 @@
                         android:layout_width="145dp"
                         android:layout_height="145dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/winfred"/>
+                        android:src="@drawable/default_profile_compressed"/>
 
 
 

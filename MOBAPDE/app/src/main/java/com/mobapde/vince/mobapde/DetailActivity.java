@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -66,6 +68,8 @@ public class DetailActivity extends AppCompatActivity {
         facultyCourse.setText(item.getCourseCode());
         roomName.setText(item.getRoom());
         classTime.setText(formatClassTime(item));
+        if(item.getPic() != null)
+            Picasso.with(DetailActivity.this).load(item.getPic()).into(facultyImage);
 
         ab = (Button) findViewById(R.id.abBtn);
         ed = (Button) findViewById(R.id.edBtn);

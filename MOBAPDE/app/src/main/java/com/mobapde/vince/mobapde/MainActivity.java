@@ -494,8 +494,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (position == PENDING_TAB)
                     btnSubmit.setVisibility(View.GONE);
-                else if (position == DONE_TAB)
+                else if (position == DONE_TAB) {
                     btnSubmit.setVisibility(View.VISIBLE);
+                }
 
                 Log.d("PRIMARY FILTER", primaryFilter.getFilterString());
 
