@@ -29,7 +29,8 @@
         <activity
             android:name=".RegisterActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".SetupAccountActivity"></activity>
+        <activity android:name=".SetupAccountActivity"
+            android:windowSoftInputMode="adjustPan" ></activity>
         <activity android:name=".DetailActivity"></activity>
 
         <receiver

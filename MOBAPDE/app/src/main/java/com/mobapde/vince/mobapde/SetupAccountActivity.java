@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -38,11 +40,18 @@ public class SetupAccountActivity extends AppCompatActivity {
     private StorageReference mStorageImage;
     private FirebaseAuth mAuth;
     private ProgressDialog mProgress;
+    public Boolean editting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_account);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.setupToolbar);
+        toolbar.setTitle("Setup Account");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
@@ -71,41 +80,85 @@ public class SetupAccountActivity extends AppCompatActivity {
                 startSetupAccount();
             }
         });
+
+        if (getIntent().getStringExtra("EDIT_NAME") != null) {
+            editting = true;
+
+            btnFinishSetup.setText("save changes");
+            toolbar.setTitle("Edit Account");
+
+            String curName = getIntent().getStringExtra("EDIT_NAME");
+            String profileUrl = getIntent().getStringExtra("EDIT_PROFILE_URL");
+
+            etName.setText(curName);
+            Picasso.with(SetupAccountActivity.this).load(profileUrl).into(imgBtnProfile);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editting)
+                    finish();
+                else if (mAuth.getCurrentUser() != null) {
+                    //mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).removeValue();
+                    mAuth.signOut();
+                }
+            }
+        });
     }
 
     private void startSetupAccount() {
         final String name = etName.getText().toString().trim();
         final String userId = mAuth.getCurrentUser().getUid();
 
-        if(!TextUtils.isEmpty(name) && profileUri != null){
+        if ((!TextUtils.isEmpty(name) && profileUri != null) || (editting && !TextUtils.isEmpty(name))) {
 
-            mProgress.setMessage("Finishing setup...");
-            mProgress.show();
+            if (!editting)
+                mProgress.setMessage("Finishing setup...");
+            else
+                mProgress.setMessage("Saving changes...");
 
-            StorageReference filePath = mStorageImage.child(profileUri.getLastPathSegment());
+            try {
+                mProgress.show();
+            } catch (Exception e) {
 
-            filePath.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    @SuppressWarnings("VisibleForTests") String downloadUri = taskSnapshot.getDownloadUrl().toString();
+            }
 
-                    mDatabaseUsers.child(userId).child("name").setValue(name);
-                    mDatabaseUsers.child(userId).child("image").setValue(downloadUri);
-                    mDatabaseUsers.child(userId).child("rotationId").setValue("_");
+            try {
+                StorageReference filePath = mStorageImage.child(profileUri.getLastPathSegment());
+                filePath.putFile(profileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        @SuppressWarnings("VisibleForTests") String downloadUri = taskSnapshot.getDownloadUrl().toString();
 
-                    mProgress.dismiss();
+                        mDatabaseUsers.child(userId).child("name").setValue(name);
+                        mDatabaseUsers.child(userId).child("image").setValue(downloadUri);
 
-                    Intent mainIntent = new Intent(SetupAccountActivity.this, MainActivity.class);
-                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    finish();
-                    startActivity(mainIntent);
-                    MainActivity.setupAccount = true;
-                }
-            });
-        }
-        else if(profileUri == null)
+                        if (!editting)
+                            mDatabaseUsers.child(userId).child("rotationId").setValue("_");
+
+                        mProgress.dismiss();
+
+                        Intent mainIntent = new Intent(SetupAccountActivity.this, MainActivity.class);
+                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        finish();
+                        startActivity(mainIntent);
+                        MainActivity.setupAccount = true;
+
+                    }
+                });
+            } catch (Exception e) {
+                mDatabaseUsers.child(userId).child("name").setValue(name);
+
+                Intent mainIntent = new Intent(SetupAccountActivity.this, MainActivity.class);
+                mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                finish();
+                startActivity(mainIntent);
+                MainActivity.setupAccount = true;
+            }
+        } else if (profileUri == null && !editting)
             Toast.makeText(SetupAccountActivity.this, "Please choose a photo.", Toast.LENGTH_SHORT).show();
-        else if(TextUtils.isEmpty(name))
+        else if (TextUtils.isEmpty(name))
             Toast.makeText(SetupAccountActivity.this, "Please fill in all the fields.", Toast.LENGTH_SHORT).show();
     }
 
@@ -113,7 +166,7 @@ public class SetupAccountActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == GALLERY_REQUEST && resultCode == RESULT_OK){
+        if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
 
             Uri imageUri = data.getData();
 
@@ -138,7 +191,9 @@ public class SetupAccountActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
-        if(mAuth.getCurrentUser() != null) {
+        if (editting)
+            finish();
+        else if (mAuth.getCurrentUser() != null) {
             //mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).removeValue();
             mAuth.signOut();
         }

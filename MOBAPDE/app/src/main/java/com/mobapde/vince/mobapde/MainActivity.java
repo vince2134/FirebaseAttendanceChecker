@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                     startActivity(loginIntent);
                 } else ;
-                FirebaseUtils.initialize();
+                //FirebaseUtils.initialize();
             }
         };
 
@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if(primaryFilter.getRotationId().equals("_")) {
                             //Log.d("PRIMARYFILTER", primaryFilter.getFilterString());
-                            notifyUser("There are no assigned classes for you yet.");
+                            notifyUser("There are no assigned classes for you yet. Please contact the administrator for help.");
                             initializeDrawer();
                         } else {
                             //notifyUser("The administrator assigned new classes for you.");
@@ -676,7 +676,21 @@ public class MainActivity extends AppCompatActivity {
 
         nView = mNavigationView.getHeaderView(0);
         civProfilePic = (CircleImageView) nView.findViewById(R.id.civ_profile_pic);
+
+
+        civProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent updateAccount = new Intent(MainActivity.this, SetupAccountActivity.class);
+                updateAccount.putExtra("EDIT_NAME", name);
+                updateAccount.putExtra("EDIT_PROFILE_URL", profileUrl);
+
+                startActivity(updateAccount);
+            }
+        });
+
         tvName = (TextView) nView.findViewById(R.id.tv_name);
+
         tvEmail = (TextView) nView.findViewById(R.id.tv_email);
 
         Picasso.with(MainActivity.this).load(profileUrl).into(civProfilePic);
