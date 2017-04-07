@@ -45,6 +45,8 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static ArrayList<TimeSlot> timeSlots = new ArrayList<>();
     public static ArrayList<String> notifications = new ArrayList<>();
+    public static ArrayList<String> adminNotifs = new ArrayList<>();
     public static ArrayList<Object> filterCounts = new ArrayList<>();
     static ArrayList<String> buildings = new ArrayList<>();
     ArrayList<Integer> buildingIDs = new ArrayList<>();
@@ -200,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeTimeSlots() {
         timeSlots.clear();
+        buildings.clear();
+        //primaryFilter.setBuilding("ALL");
 
         //SETS TIME FILTER TO CURRENT DATE WITHOUT TIME TO RETRIEVE UNIQUE TIME SLOTS
         setCurrentDate();
@@ -266,6 +271,22 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Log.d("TIMESLOT_FINISH", dataSnapshot.getChildrenCount() + "");
                     //initializeDrawer();
+
+                    Collections.sort(timeSlots, new Comparator<TimeSlot>() {
+                        @Override
+                        public int compare(TimeSlot o1, TimeSlot o2) {
+                            if(o1.getStartMillis() > o2.getStartMillis())
+                                return 1;
+                            else if(o1.getStartMillis() < o2.getStartMillis())
+                                return -1;
+                            else
+                                return 0;
+                        }
+                    });
+
+                    for(TimeSlot t: timeSlots)
+                        Log.d("TIMESLOTSSSSS", t.getStartMillis() + "");
+
                     updateFilterCounts();
                     primaryFilter.setStartMillis(-1);
                     initializeNotifications();
@@ -285,6 +306,11 @@ public class MainActivity extends AppCompatActivity {
     public static void initializeNotifications() {
         Log.d("TIMESLOT_INIT", timeSlots.size() + "");
         notifications.clear();
+
+        if(!adminNotifs.isEmpty()) {
+            notifications.add(adminNotifs.get(0));
+            adminNotifs.clear();
+        }
 
         for (TimeSlot t : timeSlots) {
             Log.d("TIMESLOT_ARRAY", t.getStartMillis() + "");
@@ -410,7 +436,8 @@ public class MainActivity extends AppCompatActivity {
                             notifyUser("There are no assigned classes for you yet.");
                             initializeDrawer();
                         } else {
-                            notifyUser("The administrator assigned new classes for you.");
+                            //notifyUser("The administrator assigned new classes for you.");
+                            adminNotifs.add("The administrator assigned new classes.");
                             initializeTimeSlots();
                             Log.d("HASROTATION", primaryFilter.getFilterString());
                         }
@@ -735,6 +762,8 @@ public class MainActivity extends AppCompatActivity {
 
                 ((DrawerLayout) findViewById(R.id.DrawerLayout)).closeDrawers();
 
+                Log.d("NAVDRAWERSELECT", primaryFilter.getFilterString());
+
                 if(menuItem.getItemId() != R.id.nav_help)
                     pagerAdapter.notifyDataSetChanged();
                 return true;
@@ -967,6 +996,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("TIMESLOT_FINISH", dataSnapshot.getChildrenCount() + "");
+
+                Collections.sort(timeSlots, new Comparator<TimeSlot>() {
+                    @Override
+                    public int compare(TimeSlot o1, TimeSlot o2) {
+                        if(o1.getStartMillis() > o2.getStartMillis())
+                            return 1;
+                        else if(o1.getStartMillis() < o2.getStartMillis())
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
+
                 initializeNotifications();
             }
 

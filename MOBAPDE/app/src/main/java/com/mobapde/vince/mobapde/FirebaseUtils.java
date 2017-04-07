@@ -143,9 +143,29 @@ public class FirebaseUtils {
         a1.setNewRoom(null);
         a1.setSubPic(null);
         a1.setPic(null);
-        a1.setRotationId("B");
+        a1.setRotationId("A");
         a1.setStatus("PENDING");
         a1.setBuilding("ANDREW");
+
+        Attendance a3 = new Attendance();
+        a3.setFacultyName("Antionio Contreras Duterte Lover");
+        a3.setRoom("A903");
+        a3.setCourseCode("SOCTEC1");
+        a3.setCourseName("Society and Technology 1");
+        a3.setStartTime(AttendanceUtils.replaceCurrentTime("9:15"));
+        a3.setEndTime(AttendanceUtils.replaceCurrentTime("10:45"));
+        a3.setCode(null); //??????????????? is the code a status?
+        a3.setEmail("antonio.contreras+duterte_lover@dlsu.edu.ph");
+        a3.setRemarks(null);
+        a3.setCollege("CCS");
+        a3.setReason(null);//???????????????? what is reason?
+        a3.setSubName(null);
+        a3.setNewRoom(null);
+        a3.setSubPic(null);
+        a3.setPic(null);
+        a3.setRotationId("B");
+        a3.setStatus("PENDING");
+        a3.setBuilding("ANDREW");
 
         a2 = new Attendance();
         a2.setFacultyName("Cuteney Ngo");
@@ -174,6 +194,7 @@ public class FirebaseUtils {
             addAttendance(a);
             addAttendance(a1);
             addAttendance(a2);
+            addAttendance(a3);
 
             Log.i(TAG,"firebase added attendance");
         }

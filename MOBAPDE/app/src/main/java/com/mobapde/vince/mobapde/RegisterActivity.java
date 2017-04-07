@@ -92,6 +92,8 @@ public class RegisterActivity extends AppCompatActivity {
                         mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         finish();
                         startActivity(mainIntent);
+
+                        Toast.makeText(RegisterActivity.this, "Account successfully created. Please setup your account.", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         mProgress.dismiss();

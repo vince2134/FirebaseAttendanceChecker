@@ -8,8 +8,8 @@ import java.util.Calendar;
 
 public class TimeSlot {
 
-    private long startMillis;
-    private long endMillis;
+    private Long startMillis;
+    private Long endMillis;
 
     public TimeSlot() {
     }
