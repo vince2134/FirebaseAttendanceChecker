@@ -13,33 +13,45 @@ import java.util.List;
 public class Attendance implements Serializable{
 
     public static final String ATTENDANCE = "ATTENDANCE_ITEM";
+    public static final String ADMIN_TABLE = "name ng table";
+
+    private String  adminAttendanceId;
     private List<String> firebaseIds = new ArrayList<String>();
-    private String facultyName;
-    private String room;
-    private String courseCode;
-    private String courseName;
-    private long startTime;
-    private long endTime;
-    private String code;
-    private String email;
-    private String remarks;
-    private String college;
-    private String reason;
-    public String subName;
-    private String newRoom;
-    private String subPic;
-    private String pic;
-    private String date;
+    private String  facultyName;
+    private String  room;
+    private String  courseCode;
+    private String  courseName;
+    private long    startTime;
+    private long    endTime;
+    private String  code;
+    private String  email;
+    private String  remarks;
+    private String  college;
+    private String  reason;
+    public String   subName;
+    private String  newRoom;
+    private String  subPic;
+    private String  pic;
+    private String  date;
+    private boolean isDone = false;
     //filters
-    private String rotationId;
-    private String status;
-    private String building;
-    private long startTimeFilter;
+    private String  rotationId;
+    private String  status;
+    private String  building;
+    private long    startTimeFilter;
     //in case you need it
     private List<String> combinationFilters;
-    private String mainCombinationFilter;
+    private String  mainCombinationFilter;
 
     public Attendance() {
+    }
+
+    public String getAdminAttendanceId() {
+        return adminAttendanceId;
+    }
+
+    public void setAdminAttendanceId(String adminAttendanceId) {
+        this.adminAttendanceId = adminAttendanceId;
     }
 
     public void addFirebaseId(String id){
@@ -188,6 +200,14 @@ public class Attendance implements Serializable{
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
     public String getRotationId() {

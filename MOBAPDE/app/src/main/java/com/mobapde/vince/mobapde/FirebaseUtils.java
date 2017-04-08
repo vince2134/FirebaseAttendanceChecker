@@ -8,7 +8,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -21,6 +24,20 @@ public class FirebaseUtils {
     private static DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
     private static final String TAG = "FirebaseUtils";
     private static Attendance a2;
+    private static ValueEventListener addAdmin = null;
+    private static ValueEventListener submit = null;
+    public static List<Attendance> allAttendance = new ArrayList<Attendance>();
+
+    public static boolean canSubmit(){
+        boolean canSubmit = true;
+        long timeNow = Calendar.getInstance().getTimeInMillis();
+        for(Attendance a:allAttendance){
+            long classTime = a.getEndTime();
+            if(timeNow <= classTime)
+                canSubmit = false;
+        }
+        return canSubmit;
+    }
 
     private static void addCount(String filter, final int change){
         DatabaseReference countref = ref.child("filterCounts").child(filter).child("count");
@@ -43,43 +60,185 @@ public class FirebaseUtils {
         });
     }
 
-    public static void addAttendance(Attendance a){
+    private static void addToList(Attendance a){
+        boolean hasDuplicate = false;
+        for(Attendance a1: allAttendance){
+            if(a1.getAdminAttendanceId().equals(a.getAdminAttendanceId()))
+                hasDuplicate = true;
+        }
+        if(!hasDuplicate){
+            allAttendance.add(a);
+        }
+    }
+
+    private static void removeFromList(Attendance a){
+        for(int i = allAttendance.size()-1; i >= 0; i++){
+            Attendance a1 = allAttendance.get(i);
+            if(a1.getAdminAttendanceId().equals(a.getAdminAttendanceId())) {
+                allAttendance.remove(i);
+                break;
+            }
+        }
+    }
+
+    private static void updateFromList(Attendance a){
+        for(int i = allAttendance.size()-1; i >= 0; i++){
+            if(i < allAttendance.size()){
+            Attendance a1 = allAttendance.get(i);
+            if(a1.getAdminAttendanceId().equals(a.getAdminAttendanceId())) {
+                allAttendance.set(i,a);
+                break;
+            }}
+        }
+    }
+
+    public static void submit(){
+
+        final DatabaseReference f = FirebaseDatabase.getInstance().getReference();
+
+        Calendar calendar = Calendar.getInstance();
+
+        //replace the current time by the time provided in the parameter
+        calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                0,
+                0,
+                0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        f.child("SubmittedDates").child(calendar.getTimeInMillis() + "");
+
+        for(final Attendance a: allAttendance){
+            a.setStatus("SUBMITTED");
+            f.child("AdminAttendance").child(a.getAdminAttendanceId()).setValue(a);
+            a.setCombinationFilters(null);
+
+            List<String> combinationFilters = a.getCombinationFilters();
+            if(combinationFilters == null){
+                a.generateFilters();
+                combinationFilters = a.getCombinationFilters();
+            }
+            for (final String filter: combinationFilters) {
+                if(!"count".equals(filter) && "SUBMITTED".equalsIgnoreCase(filter.split("-")[1])){
+                    Log.i(TAG,"going to add to filter `"+filter+"`");
+                    DatabaseReference r = ref.child(filter).push();
+                    a.addFirebaseId(r.getKey());
+                    r.setValue(a,new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            addCount(filter,1);
+                            updateFromList(a);
+                        }
+                    });
+
+                }
+            }
+        }
+
+        submit = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot tableSnapshot : dataSnapshot.getChildren()) {
+                    String tableName = (String) tableSnapshot.getValue();
+                    if(!"Building".equalsIgnoreCase(tableName) &&
+                            !"Course".equalsIgnoreCase(tableName) &&
+                            !"CourseOffering".equalsIgnoreCase(tableName) &&
+                            !"Faculty".equalsIgnoreCase(tableName) &&
+                            !"Room".equalsIgnoreCase(tableName) &&
+                            !"Users".equalsIgnoreCase(tableName) &&
+                            !"filterCounts".equalsIgnoreCase(tableName)&&
+                            !"SUBMITTED".equalsIgnoreCase(tableName.split("-")[1])){
+                        f.child(tableName).setValue(null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        ref.removeEventListener(addAdmin);
+        f.addValueEventListener(submit);
+    }
+
+    public static void addAttendance(final Attendance a){
         List<String> combinationFilters = a.getCombinationFilters();
         if(combinationFilters == null){
             a.generateFilters();
             combinationFilters = a.getCombinationFilters();
         }
-        for (String filter: combinationFilters) {
+        for (final String filter: combinationFilters) {
             if(!"count".equals(filter)){
                 Log.i(TAG,"going to add to filter `"+filter+"`");
                 DatabaseReference r = ref.child(filter).push();
                 a.addFirebaseId(r.getKey());
-                r.setValue(a);
+                r.setValue(a,new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        addCount(filter,1);
+                        addToList(a);
+                    }
+                });
 
-                addCount(filter,1);
             }
         }
     }
 
     //only updates all attendances with same id. does not transfer them to tables
-    public static void updateAttendanceByIdOnly(Attendance updatedAttendance){
-        List<String> ids = updatedAttendance.getFirebaseIds();
-        List<String> combinationFilters = updatedAttendance.getCombinationFilters();
+    public static void updateAttendanceByIdOnly(final Attendance updatedAttendance){
+        Log.i(TAG,"FIREBASE update id only");
+        final List<String> ids = updatedAttendance.getFirebaseIds();
+        final List<String> combinationFilters = updatedAttendance.getCombinationFilters();
 
-        for(String filter: combinationFilters){
-            for (int i = ids.size() - 1; i >= 0; i--) {
-                String id = ids.get(i);
+        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child("AdminAttendance");
+        updateFromList(updatedAttendance);
+        String adminId = updatedAttendance.getAdminAttendanceId();
+        r.child(adminId).setValue(updatedAttendance);
 
-                ref.child(filter).child(id).setValue(updatedAttendance);
+        final DatabaseReference r2 = FirebaseDatabase.getInstance().getReference();
+
+        r2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(String filter: combinationFilters){
+                    for (int i = ids.size() - 1; i >= 0; i--) {
+                        String id = ids.get(i);
+                        Log.i(TAG,"firebase id u[dTTE "+id);
+
+                        //if (dataSnapshot.hasChild(filter)) {
+                            for(DataSnapshot a:dataSnapshot.getChildren()){
+                                if(a.getKey().equalsIgnoreCase(id))
+                                    r2.child(filter).child(id).setValue(updatedAttendance);
+                            }
+                        //}
+                    }
+                }
+
             }
-        }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     public static void updateAttendance(final Attendance updatedAttendance){
+        Log.i(TAG,"FIREBASE attendance update adddelete ");
         List<String> ids = updatedAttendance.getFirebaseIds();
         List<String> combinationFilters = updatedAttendance.getCombinationFilters();
 
-        for(String id:ids){
+        DatabaseReference r = FirebaseDatabase.getInstance().getReference().child("AdminAttendance");
+        updateFromList(updatedAttendance);
+
+        for(int i = 0; i < ids.size();i++){
+            String id = ids.get(i);
             Log.i(TAG, "before delete id: "+id);
         }
         for(String id:combinationFilters){
@@ -87,12 +246,20 @@ public class FirebaseUtils {
         }
 
 
-        for(String filter: combinationFilters){
+        for(final String filter: combinationFilters){
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id = ids.get(i);
+                String adminId = updatedAttendance.getAdminAttendanceId();
+                Log.i(TAG, id + ", "+adminId+", "+filter+"hahaha");
+                r.child(adminId).setValue(updatedAttendance);
 
-                ref.child(filter).child(id).setValue(null);
-                addCount(filter,-1);
+                DatabaseReference r1 = FirebaseDatabase.getInstance().getReference();
+                r1.child(filter).child(id).setValue(null, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        addCount(filter,-1);
+                    }
+                });
             }
         }
 
@@ -107,123 +274,36 @@ public class FirebaseUtils {
 
     public static void initialize(){
 
-        Attendance a = new Attendance();
-        a.setFacultyName("Rafogi Cabredo");
-        a.setRoom("G211");
-        a.setCourseCode("CSETHICS");
-        a.setCourseName("Computer Science ethics");
-        a.setStartTime(AttendanceUtils.replaceCurrentTime("12:45"));
-        a.setEndTime(AttendanceUtils.replaceCurrentTime("14:15"));
-        a.setCode(null); //??????????????? is the code a status?
-        a.setEmail("rafael.cabredo@dlsu.edu.ph");
-        a.setRemarks(null);
-        a.setCollege("CCS");
-        a.setReason(null);//???????????????? what is reason?
-        a.setSubName(null);
-        a.setNewRoom(null);
-        a.setSubPic(null);
-        a.setPic(null);
-        a.setRotationId("A");
-        a.setStatus("PENDING");
-        a.setBuilding("GOKONGWEI");
+        addAdmin = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot attendanceSnapshot : dataSnapshot.getChildren()) {
+                    Log.i(TAG, attendanceSnapshot.getKey() + ", key");
+                    Attendance a = attendanceSnapshot.getValue(Attendance.class);
+                    Log.i(TAG, a.getRotationId() + ", "+a.getStatus());
+                    a.setAdminAttendanceId(attendanceSnapshot.getKey());
+                    Log.i(TAG, "hahaha" + a.getAdminAttendanceId());
+                    if("PENDING".equalsIgnoreCase(a.getStatus()))
+                        addAttendance(a);
+                }
+            }
 
-        Attendance a1 = new Attendance();
-        a1.setFacultyName("Antionio Contreras Duterte Lover");
-        a1.setRoom("A903");
-        a1.setCourseCode("SOCTEC1");
-        a1.setCourseName("Society and Technology 1");
-        a1.setStartTime(AttendanceUtils.replaceCurrentTime("9:15"));
-        a1.setEndTime(AttendanceUtils.replaceCurrentTime("10:45"));
-        a1.setCode(null); //??????????????? is the code a status?
-        a1.setEmail("antonio.contreras+duterte_lover@dlsu.edu.ph");
-        a1.setRemarks(null);
-        a1.setCollege("CCS");
-        a1.setReason(null);//???????????????? what is reason?
-        a1.setSubName(null);
-        a1.setNewRoom(null);
-        a1.setSubPic(null);
-        a1.setPic(null);
-        a1.setRotationId("A");
-        a1.setStatus("PENDING");
-        a1.setBuilding("ANDREW");
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        Attendance a3 = new Attendance();
-        a3.setFacultyName("Antionio Contreras Duterte Lover");
-        a3.setRoom("A903");
-        a3.setCourseCode("SOCTEC1");
-        a3.setCourseName("Society and Technology 1");
-        a3.setStartTime(AttendanceUtils.replaceCurrentTime("9:15"));
-        a3.setEndTime(AttendanceUtils.replaceCurrentTime("10:45"));
-        a3.setCode(null); //??????????????? is the code a status?
-        a3.setEmail("antonio.contreras+duterte_lover@dlsu.edu.ph");
-        a3.setRemarks(null);
-        a3.setCollege("CCS");
-        a3.setReason(null);//???????????????? what is reason?
-        a3.setSubName(null);
-        a3.setNewRoom(null);
-        a3.setSubPic(null);
-        a3.setPic(null);
-        a3.setRotationId("B");
-        a3.setStatus("PENDING");
-        a3.setBuilding("ANDREW");
+            }
+        };
 
-        a2 = new Attendance();
-        a2.setFacultyName("Cuteney Ngo");
-        a2.setRoom("G301");
-        a2.setCourseCode("MOBAPDE");
-        a2.setCourseName("Mobile Application and Development");
-        a2.setStartTime(AttendanceUtils.replaceCurrentTime("14:30"));
-        a2.setEndTime(AttendanceUtils.replaceCurrentTime("17:45"));
-        a2.setCode(null); //??????????????? is the code a status?
-        a2.setEmail("courtney.ngo@dlsu.edu.ph");
-        a2.setRemarks(null);
-        a2.setCollege("CCS");
-        a2.setReason(null);//???????????????? what is reason?
-        a2.setSubName(null);
-        a2.setNewRoom(null);
-        a2.setSubPic(null);
-        a2.setPic(null);
-        a2.setRotationId("A");
-        a2.setStatus("PENDING");
-        a2.setBuilding("GOKONGWEI");
 
         ref = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference t = ref.child("AdminAttendance");
 
         Log.i(TAG,"firebase is initialized: "+isInitialized);
         if(!isInitialized){
-            addAttendance(a);
-            addAttendance(a1);
-            addAttendance(a2);
-            addAttendance(a3);
-
-            Log.i(TAG,"firebase added attendance");
+            t.addValueEventListener(addAdmin);
         }
         isInitialized = true;
 
     }
 
-    public static void testUpdate(){
-        //update the a2 instance from FirebaseUtils.initialize()
-        //Attendance a2 = new Attendance();
-        a2.setFacultyName("Cuteney Ngo");
-        a2.setRoom("G301");
-        a2.setCourseCode("MOBAPDE");
-        a2.setCourseName("Mobile Application and Development");
-        a2.setStartTime(AttendanceUtils.replaceCurrentTime("14:30"));
-        a2.setEndTime(AttendanceUtils.replaceCurrentTime("17:45"));
-        a2.setCode(null); //??????????????? is the code a status?
-        a2.setEmail("courtney.ngo@dlsu.edu.ph");
-        a2.setRemarks(null);
-        a2.setCollege("CCS");
-        a2.setReason(null);//???????????????? what is reason?
-        a2.setSubName(null);
-        a2.setNewRoom(null);
-        a2.setSubPic(null);
-        a2.setPic(null);
-        a2.setRotationId("D");
-        a2.setStatus("SUBMITTED");
-        a2.setBuilding("GOKONGWEI");
-
-        updateAttendance(a2);
-    }
 }

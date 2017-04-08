@@ -59,9 +59,9 @@ public class AttendanceUtils {
         if(status == null)
             throw new NullPointerException("status is null");
         if(building == null)
-            throw new NullPointerException("rotationId is null");
+            throw new NullPointerException("building is null");
         if(startTime.equals("0"))
-            throw new NullPointerException("rotationId is null");
+            throw new NullPointerException("startTime is null");
 
         Calendar calendar = Calendar.getInstance();
 
@@ -87,9 +87,14 @@ public class AttendanceUtils {
             for (String s: statusFilters)
                 for (String b : buildingFilters)
                     for (String st: startTimeFilters) {
-                        combinationFilters.add(r+"-"+s+"-"+b+"-"+st);
+                        String filter = r+"-"+s+"-"+b+"-"+st;
+                        Log.i(TAG, "filter a "+filter);
+                        combinationFilters.add(filter);
                     }
 
         return combinationFilters;
     }
 }
+
+
+

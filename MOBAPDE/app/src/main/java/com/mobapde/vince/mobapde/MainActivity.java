@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -128,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
                     startActivity(loginIntent);
-                } else ;
-                //FirebaseUtils.initialize();
+                } else
+                    FirebaseUtils.initialize();
             }
         };
 
@@ -140,14 +142,6 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
 
         //replace the current time by the time provided in the parameter
-        calendar.set(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH),
-                0,
-                0,
-                0);
-        calendar.set(Calendar.MILLISECOND, 0);
 
         primaryFilter = new AttendanceFilter();
         primaryFilter.setTab(0);
@@ -173,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         //FirebaseUtils.generateTables(new TableFilters());
     }
 
-    public void setCurrentDate(){
+    public void setCurrentDate() {
         Calendar calendar = Calendar.getInstance();
 
         //replace the current time by the time provided in the parameter
@@ -275,16 +269,16 @@ public class MainActivity extends AppCompatActivity {
                     Collections.sort(timeSlots, new Comparator<TimeSlot>() {
                         @Override
                         public int compare(TimeSlot o1, TimeSlot o2) {
-                            if(o1.getStartMillis() > o2.getStartMillis())
+                            if (o1.getStartMillis() > o2.getStartMillis())
                                 return 1;
-                            else if(o1.getStartMillis() < o2.getStartMillis())
+                            else if (o1.getStartMillis() < o2.getStartMillis())
                                 return -1;
                             else
                                 return 0;
                         }
                     });
 
-                    for(TimeSlot t: timeSlots)
+                    for (TimeSlot t : timeSlots)
                         Log.d("TIMESLOTSSSSS", t.getStartMillis() + "");
 
                     updateFilterCounts();
@@ -292,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                     initializeNotifications();
                     pagerAdapter.notifyDataSetChanged();
                 } catch (Exception e) {
+
 
                 }
             }
@@ -307,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("TIMESLOT_INIT", timeSlots.size() + "");
         notifications.clear();
 
-        if(!adminNotifs.isEmpty()) {
+        if (!adminNotifs.isEmpty()) {
             notifications.add(adminNotifs.get(0));
             adminNotifs.clear();
         }
@@ -413,12 +408,71 @@ public class MainActivity extends AppCompatActivity {
                     } else if (dataSnapshot.getKey().equals("rotationId")) {
                         primaryFilter.setRotationId(dataSnapshot.getValue().toString());
 
-                        if(primaryFilter.getRotationId().equals("_")) {
+                        if (primaryFilter.getRotationId().equals("_")) {
                             notifyUser("There are no assigned classes for you yet. Please contact the administrator for help.");
                             initializeDrawer();
                             initialized = true;
                         } else {
-                            initializeTimeSlots();
+                            final DatabaseReference f = FirebaseDatabase.getInstance().getReference();
+
+                            final Calendar calendar = Calendar.getInstance();
+
+                            calendar.set(
+                                    calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH),
+                                    calendar.get(Calendar.DAY_OF_MONTH),
+                                    0,
+                                    0,
+                                    0);
+                            calendar.set(Calendar.MILLISECOND, 0);
+
+                            f.child("SubmittedDates").addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                    Log.d("DATESSSS", dataSnapshot.getKey().toString());
+
+                                    if (dataSnapshot.getKey().toString().equals(calendar.getTimeInMillis() + "")) {
+                                        submitted = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                                }
+
+                                @Override
+                                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                }
+
+                                @Override
+                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            f.child("SubmittedDates").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (submitted || FirebaseUtils.canSubmit()) {
+                                        initializeDrawer();
+                                    }
+                                    else {
+                                        initializeTimeSlots();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                             Log.d("HASROTATION", primaryFilter.getFilterString());
                         }
                     }
@@ -431,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
                     if (dataSnapshot.getKey().equals("rotationId")) {
                         primaryFilter.setRotationId(dataSnapshot.getValue().toString());
 
-                        if(primaryFilter.getRotationId().equals("_")) {
+                        if (primaryFilter.getRotationId().equals("_")) {
                             //Log.d("PRIMARYFILTER", primaryFilter.getFilterString());
                             notifyUser("There are no assigned classes for you yet. Please contact the administrator for help.");
                             initializeDrawer();
@@ -488,6 +542,19 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 primaryFilter.setTab(position);
+                if (primaryFilter.getStartMillis() == -1) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            0,
+                            0,
+                            0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+
+                    primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                }
                 Log.d("TABSWITCH", primaryFilter.getFilterString());
                 pagerAdapter.notifyDataSetChanged();
                 updateFilterCounts();
@@ -496,6 +563,82 @@ public class MainActivity extends AppCompatActivity {
                     btnSubmit.setVisibility(View.GONE);
                 else if (position == DONE_TAB) {
                     btnSubmit.setVisibility(View.VISIBLE);
+
+                    final DatabaseReference f = FirebaseDatabase.getInstance().getReference();
+
+                    final Calendar calendar = Calendar.getInstance();
+
+                    calendar.set(
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            0,
+                            0,
+                            0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+
+                    f.child("SubmittedDates").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            Log.d("DATESSSS", dataSnapshot.getKey().toString());
+
+                            if (dataSnapshot.getKey().toString().equals(calendar.getTimeInMillis() + "")) {
+                                submitted = true;
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    f.child("SubmittedDates").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (submitted) {
+                                btnSubmit.setText("ALREADY SUBMITTED");
+                                primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                                primaryFilter.setStatus("SUBMITTED");
+                                pagerAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    if (FirebaseUtils.canSubmit()) {
+                        primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                        btnSubmit.setText("SUBMIT");
+                        btnSubmit.setEnabled(true);
+                        btnSubmit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                confirmSubmission();
+                            }
+                        });
+                    } else {
+                        btnSubmit.setText("You cannot submit yet");
+                        btnSubmit.setOnClickListener(null);
+                    }
                 }
 
                 Log.d("PRIMARY FILTER", primaryFilter.getFilterString());
@@ -514,6 +657,29 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void confirmSubmission() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+
+        adb.setTitle("Confirmation");
+        adb.setMessage("Are you sure you want to submit?").setNegativeButton("no", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        adb.setCancelable(true);
+
+        adb.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FirebaseUtils.submit();
+                submitted = true;
+                primaryFilter.setStatus("SUBMITTED");
+            }
+        });
+
+        adb.show();
     }
 
     public void updateDrawerCounter() {
@@ -626,7 +792,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //CALL ONLY WHEN THERE IS ASSIGNED ROTOTATION ID
-        if(!primaryFilter.getRotationId().equals("_")) {
+        if (!primaryFilter.getRotationId().equals("_") && !FirebaseUtils.canSubmit()) {
             for (String filter : (ArrayList<String>) filterCounts.get(0))
                 Log.d("FILTERARRAY", filter);
             for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
@@ -724,8 +890,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
 
-                for(int i = 0; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++){
-                    ((TextView)mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getActionView()).setTextColor(Color.rgb(109, 109, 109));
+                for (int i = 0; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
+                    ((TextView) mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getActionView()).setTextColor(Color.rgb(109, 109, 109));
                 }
 
                 switch (menuItem.getItemId()) {
@@ -733,39 +899,39 @@ public class MainActivity extends AppCompatActivity {
                         mAuth.signOut();
                         break;
                     case R.id.nav_allbuildings:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ALL");
                         break;
                     case R.id.nav_gokongwei:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("GOKONGWEI");
                         break;
                     case R.id.nav_andrew:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ANDREW");
                         break;
                     case R.id.nav_lasallehall:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("LASALLEHALL");
                         break;
                     case R.id.nav_miguel:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("MIGUEL");
                         break;
                     case R.id.nav_razon:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("RAZON");
                         break;
                     case R.id.nav_saintjoseph:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("SAINTJOSEPH");
                         break;
                     case R.id.nav_yuchengco:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("YUCHENGCO");
                         break;
                     case R.id.nav_velasco:
-                        ((TextView)menuItem.getActionView()).setTextColor(Color.WHITE);
+                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("VELASCO");
                         break;
                     case R.id.nav_help:
@@ -779,7 +945,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("NAVDRAWERSELECT", primaryFilter.getFilterString());
 
-                if(menuItem.getItemId() != R.id.nav_help)
+                if (menuItem.getItemId() != R.id.nav_help)
                     pagerAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -908,7 +1074,7 @@ public class MainActivity extends AppCompatActivity {
                 attendance.setStatus("DONE");
                 FirebaseUtils.updateAttendance(attendance);
             } else
-                FirebaseUtils.updateAttendanceByIdOnly(attendance);
+                FirebaseUtils.updateAttendance(attendance);
 
             pagerAdapter.notifyDataSetChanged();
             updateFilterCounts();
@@ -1016,9 +1182,9 @@ public class MainActivity extends AppCompatActivity {
                 Collections.sort(timeSlots, new Comparator<TimeSlot>() {
                     @Override
                     public int compare(TimeSlot o1, TimeSlot o2) {
-                        if(o1.getStartMillis() > o2.getStartMillis())
+                        if (o1.getStartMillis() > o2.getStartMillis())
                             return 1;
-                        else if(o1.getStartMillis() < o2.getStartMillis())
+                        else if (o1.getStartMillis() < o2.getStartMillis())
                             return -1;
                         else
                             return 0;
