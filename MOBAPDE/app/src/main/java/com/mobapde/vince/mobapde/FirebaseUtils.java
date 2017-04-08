@@ -141,16 +141,19 @@ public class FirebaseUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot tableSnapshot : dataSnapshot.getChildren()) {
-                    String tableName = (String) tableSnapshot.getValue();
-                    if(!"Building".equalsIgnoreCase(tableName) &&
-                            !"Course".equalsIgnoreCase(tableName) &&
-                            !"CourseOffering".equalsIgnoreCase(tableName) &&
-                            !"Faculty".equalsIgnoreCase(tableName) &&
-                            !"Room".equalsIgnoreCase(tableName) &&
-                            !"Users".equalsIgnoreCase(tableName) &&
-                            !"filterCounts".equalsIgnoreCase(tableName)&&
-                            !"SUBMITTED".equalsIgnoreCase(tableName.split("-")[1])){
-                        f.child(tableName).setValue(null);
+                    for(DataSnapshot child: tableSnapshot.getChildren()) {
+                        Log.d("WTF", tableSnapshot.getValue() + "");
+                        String childName = (String) child.getValue();
+                        if (!"Building".equalsIgnoreCase(childName) &&
+                                !"Course".equalsIgnoreCase(childName) &&
+                                !"CourseOffering".equalsIgnoreCase(childName) &&
+                                !"Faculty".equalsIgnoreCase(childName) &&
+                                !"Room".equalsIgnoreCase(childName) &&
+                                !"Users".equalsIgnoreCase(childName) &&
+                                !"filterCounts".equalsIgnoreCase(childName) &&
+                                !"SUBMITTED".equalsIgnoreCase(childName.split("-")[1])) {
+                            f.child(childName).setValue(null);
+                        }
                     }
                 }
             }

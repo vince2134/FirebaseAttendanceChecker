@@ -462,6 +462,13 @@ public class MainActivity extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (submitted || FirebaseUtils.canSubmit()) {
                                         initializeDrawer();
+
+                                        if(FirebaseUtils.canSubmit()){
+                                            notifyUser("You have accomplished all attendance for today. You may now submit in the DONE tab.");
+                                        }
+                                        else if(submitted) {
+                                            notifyUser("You have already submitted the attendance for today.");
+                                        }
                                     }
                                     else {
                                         initializeTimeSlots();
@@ -542,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
 
                 primaryFilter.setTab(position);
+
                 if (primaryFilter.getStartMillis() == -1) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(
@@ -556,11 +564,12 @@ public class MainActivity extends AppCompatActivity {
                     primaryFilter.setStartMillis(calendar.getTimeInMillis());
                 }
                 Log.d("TABSWITCH", primaryFilter.getFilterString());
-                pagerAdapter.notifyDataSetChanged();
                 updateFilterCounts();
 
-                if (position == PENDING_TAB)
+                if (position == PENDING_TAB) {
                     btnSubmit.setVisibility(View.GONE);
+                    pagerAdapter.notifyDataSetChanged();
+                }
                 else if (position == DONE_TAB) {
                     btnSubmit.setVisibility(View.VISIBLE);
 
@@ -613,10 +622,28 @@ public class MainActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (submitted) {
                                 btnSubmit.setText("ALREADY SUBMITTED");
+                                btnSubmit.setOnClickListener(null);
                                 primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 primaryFilter.setStatus("SUBMITTED");
                                 pagerAdapter.notifyDataSetChanged();
+                            } else if (!submitted && FirebaseUtils.canSubmit()){
+                                primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                                Log.d("CANSUBMIT", primaryFilter.getFilterString());
+                                btnSubmit.setText("SUBMIT");
+                                btnSubmit.setEnabled(true);
+                                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        confirmSubmission();
+                                    }
+                                });
+                            } else if(!submitted && !FirebaseUtils.canSubmit()){
+                                btnSubmit.setText("You cannot submit yet");
+                                btnSubmit.setOnClickListener(null);
                             }
+
+
+                            pagerAdapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -625,20 +652,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    if (FirebaseUtils.canSubmit()) {
-                        primaryFilter.setStartMillis(calendar.getTimeInMillis());
-                        btnSubmit.setText("SUBMIT");
-                        btnSubmit.setEnabled(true);
-                        btnSubmit.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                confirmSubmission();
-                            }
-                        });
+                    /*if (FirebaseUtils.canSubmit() && !submitted) {
+
                     } else {
                         btnSubmit.setText("You cannot submit yet");
                         btnSubmit.setOnClickListener(null);
-                    }
+                    }*/
                 }
 
                 Log.d("PRIMARY FILTER", primaryFilter.getFilterString());
