@@ -379,8 +379,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else {
-            Toast.makeText(mainContext, "No attendance retrieved.", Toast.LENGTH_LONG).show();
-            notifications.add("No attendance retrieved.");
+            Toast.makeText(mainContext, "No attendance retrieved for today.", Toast.LENGTH_LONG).show();
+            notifications.add("No attendance retrieved for today.");
             startInitializer();
             pagerAdapter.notifyDataSetChanged();
             //initializeTimeSlots();
