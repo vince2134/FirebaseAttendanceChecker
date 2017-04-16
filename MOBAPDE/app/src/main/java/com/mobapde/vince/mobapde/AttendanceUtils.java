@@ -52,7 +52,7 @@ public class AttendanceUtils {
         String status       = a.getStatus();
         String building     = a.getBuilding();
         String startTime    = Long.toString(a.getStartTime());
-        Log.i(TAG,a.getStartTime() + ", "+startTime);
+        Log.i(TAG,"roationId: "+rotationId+", status: "+status+", building: "+building+", startTime: "+a.getStartTime() + ", "+startTime);
 
         if(rotationId == null)
             throw new NullPointerException("rotationId is null");
@@ -81,14 +81,13 @@ public class AttendanceUtils {
         List<String> startTimeFilters = Arrays.asList(startTime, calendar.getTimeInMillis() + "");
 
         List<String> combinationFilters = new ArrayList<String>();
-        a.setMainCombinationFilter(rotationId + "-" + status + "-" + building + "-" + startTime);
 
         for (String r : rotationIdFilters)
             for (String s: statusFilters)
                 for (String b : buildingFilters)
                     for (String st: startTimeFilters) {
                         String filter = r+"-"+s+"-"+b+"-"+st;
-                        Log.i(TAG, "filter a "+filter);
+                        Log.i(TAG, "combinationFilter: "+filter);
                         combinationFilters.add(filter);
                     }
 

@@ -38,7 +38,7 @@ public class FirebaseUtils {
         }
         return canSubmit;
     }
-
+/*
     private static void addCount(String filter, final int change){
         DatabaseReference countref = ref.child("filterCounts").child(filter).child("count");
         countref.runTransaction(new Transaction.Handler() {
@@ -92,10 +92,8 @@ public class FirebaseUtils {
         }
     }
 
+    private Attendance updateAttendance;
     public static void submit(){
-
-        final DatabaseReference f = FirebaseDatabase.getInstance().getReference();
-
         Calendar calendar = Calendar.getInstance();
 
         //replace the current time by the time provided in the parameter
@@ -108,11 +106,11 @@ public class FirebaseUtils {
                 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        f.child("SubmittedDates").child(calendar.getTimeInMillis() + "");
+        //f.child("SubmittedDates").child(calendar.getTimeInMillis() + "");
 
         for(final Attendance a: allAttendance){
             a.setStatus("SUBMITTED");
-            f.child("AdminAttendance").child(a.getAdminAttendanceId()).setValue(a);
+            //f.child("AdminAttendance").child(a.getAdminAttendanceId()).setValue(a);
             a.setCombinationFilters(null);
 
             List<String> combinationFilters = a.getCombinationFilters();
@@ -140,9 +138,15 @@ public class FirebaseUtils {
         submit = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i(TAG, "onDataChange for submit. dataSnapshot key is: "+dataSnapshot.getKey());
                 for (DataSnapshot tableSnapshot : dataSnapshot.getChildren()) {
-                    Log.d("WTF", tableSnapshot.getValue() + "");
-                    String tableName = (String) tableSnapshot.getValue();
+                    Log.i(TAG, "onDataChange for submit. tableSnapshot key is: ");
+                    //Log.d("WTF", tableSnapshot.getValue() + "");
+                    Log.i(TAG, "key "+tableSnapshot.getKey()); //+ " value: " + tableSnapshot.getValue());
+                    String tableName = tableSnapshot.getKey().toString();
+                    String[] filters = tableName.split("-");
+
+                    String statusFilter = (filters.length > 1) ? tableName.split("-")[1] : "SUBMITTED";
                     if(!"Building".equalsIgnoreCase(tableName) &&
                             !"Course".equalsIgnoreCase(tableName) &&
                             !"CourseOffering".equalsIgnoreCase(tableName) &&
@@ -150,8 +154,8 @@ public class FirebaseUtils {
                             !"Room".equalsIgnoreCase(tableName) &&
                             !"Users".equalsIgnoreCase(tableName) &&
                             !"filterCounts".equalsIgnoreCase(tableName)&&
-                            !"SUBMITTED".equalsIgnoreCase(tableName.split("-")[1])){
-                        f.child(tableName).setValue(null);
+                            !"SUBMITTED".equalsIgnoreCase(statusFilter)){
+                        ref.child(tableName).setValue(null);
                     }
                 }
             }
@@ -163,25 +167,32 @@ public class FirebaseUtils {
         };
 
         ref.removeEventListener(addAdmin);
-        f.addValueEventListener(submit);
+        DatabaseReference submitRef = FirebaseDatabase.getInstance().getReference();
+        submitRef.addValueEventListener(submit);
     }
+    private static Attendance attendanceToAdd;
+    public static void addAttendance(Attendance a){
+        attendanceToAdd = a;
+        Log.i(TAG, "addAttendance() status of attendance: "+attendanceToAdd.getStatus());
+        attendanceToAdd.setCombinationFilters(null);
+        List<String> combinationFilters = attendanceToAdd.getCombinationFilters();
 
-    public static void addAttendance(final Attendance a){
-        List<String> combinationFilters = a.getCombinationFilters();
         if(combinationFilters == null){
-            a.generateFilters();
-            combinationFilters = a.getCombinationFilters();
+            Log.i(TAG,"null combination filter");
+            attendanceToAdd.generateFilters();
+            combinationFilters = attendanceToAdd.getCombinationFilters();
         }
         for (final String filter: combinationFilters) {
+            Log.i(TAG, "addAttendance() combinationFilter: "+filter);
             if(!"count".equals(filter)){
                 Log.i(TAG,"going to add to filter `"+filter+"`");
                 DatabaseReference r = ref.child(filter).push();
-                a.addFirebaseId(r.getKey());
+                attendanceToAdd.addFirebaseId(r.getKey());
                 r.setValue(a,new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         addCount(filter,1);
-                        addToList(a);
+                        addToList(attendanceToAdd);
                     }
                 });
 
@@ -274,14 +285,15 @@ public class FirebaseUtils {
     }
 
     public static void initialize(){
-
+        allAttendance.clear();
+        allAttendance = new ArrayList<Attendance>();
         addAdmin = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot attendanceSnapshot : dataSnapshot.getChildren()) {
                     Log.i(TAG, attendanceSnapshot.getKey() + ", key");
                     Attendance a = attendanceSnapshot.getValue(Attendance.class);
-                    Log.i(TAG, a.getRotationId() + ", "+a.getStatus());
+                    Log.i(TAG, a.getRotationId() + ", "+a.getStatus() + " isPending? "+"PENDING".equalsIgnoreCase(a.getStatus()));
                     a.setAdminAttendanceId(attendanceSnapshot.getKey());
                     Log.i(TAG, "hahaha" + a.getAdminAttendanceId());
                     if("PENDING".equalsIgnoreCase(a.getStatus()))
@@ -305,6 +317,6 @@ public class FirebaseUtils {
         }
         isInitialized = true;
 
-    }
+    }*/
 
 }

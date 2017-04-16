@@ -46,9 +46,11 @@ import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressDialog mProgress;
 
+    Calendar calendar = Calendar.getInstance();
+
     public static ArrayList<TimeSlot> timeSlots = new ArrayList<>();
     public static ArrayList<String> notifications = new ArrayList<>();
     public static ArrayList<String> adminNotifs = new ArrayList<>();
@@ -110,9 +114,29 @@ public class MainActivity extends AppCompatActivity {
     public static Boolean setupAccount = false;
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        FirebaseModel.saveState(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FirebaseModel.saveState(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseModel.resumeState(this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FirebaseModel.resumeState(this);
 
         mainContext = MainActivity.this;
 
@@ -129,11 +153,16 @@ public class MainActivity extends AppCompatActivity {
                     Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     finish();
-                    startActivity(loginIntent);
+                    startActivity(loginIntent);//firebaseAuth.getCurrentUser().
                 } else
-                    FirebaseUtils.initialize();
+                    try {
+                        FirebaseModel.initialize();
+                    } catch (Exception e){
+
+                    }
             }
         };
+
 
         mAuth.addAuthStateListener(mAuthListener);
         mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -158,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         btnSubmit.setTextColor(Color.rgb(8, 120, 48));
 
         checkUserExist();
+
         //initializeUser();
         //initializeTimeSlots();
         //udpateFilterCounts();
@@ -460,17 +490,11 @@ public class MainActivity extends AppCompatActivity {
                             f.child("SubmittedDates").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (submitted || FirebaseUtils.canSubmit()) {
+                                    if (submitted) {
                                         initializeDrawer();
+                                        notifyUser("You have already submitted the attendance for today.");
 
-                                        if(FirebaseUtils.canSubmit()){
-                                            notifyUser("You have accomplished all attendance for today. You may now submit in the DONE tab.");
-                                        }
-                                        else if(submitted) {
-                                            notifyUser("You have already submitted the attendance for today.");
-                                        }
-                                    }
-                                    else {
+                                    } else {
                                         initializeTimeSlots();
                                     }
                                 }
@@ -569,13 +593,10 @@ public class MainActivity extends AppCompatActivity {
                 if (position == PENDING_TAB) {
                     btnSubmit.setVisibility(View.GONE);
                     pagerAdapter.notifyDataSetChanged();
-                }
-                else if (position == DONE_TAB) {
+                } else if (position == DONE_TAB) {
                     btnSubmit.setVisibility(View.VISIBLE);
 
-                    final DatabaseReference f = FirebaseDatabase.getInstance().getReference();
-
-                    final Calendar calendar = Calendar.getInstance();
+                    DatabaseReference f = FirebaseDatabase.getInstance().getReference();
 
                     calendar.set(
                             calendar.get(Calendar.YEAR),
@@ -592,6 +613,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("DATESSSS", dataSnapshot.getKey().toString());
 
                             if (dataSnapshot.getKey().toString().equals(calendar.getTimeInMillis() + "")) {
+                                Log.d("SUBMITTODAY", "IT TRUE");
                                 submitted = true;
                             }
                         }
@@ -626,7 +648,7 @@ public class MainActivity extends AppCompatActivity {
                                 primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 primaryFilter.setStatus("SUBMITTED");
                                 pagerAdapter.notifyDataSetChanged();
-                            } else if (!submitted && FirebaseUtils.canSubmit()){
+                            } else if (!submitted) {
                                 primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 Log.d("CANSUBMIT", primaryFilter.getFilterString());
                                 btnSubmit.setText("SUBMIT");
@@ -637,13 +659,8 @@ public class MainActivity extends AppCompatActivity {
                                         confirmSubmission();
                                     }
                                 });
-                            } else if(!submitted && !FirebaseUtils.canSubmit()){
-                                btnSubmit.setText("You cannot submit yet");
-                                btnSubmit.setOnClickListener(null);
+                                pagerAdapter.notifyDataSetChanged();
                             }
-
-
-                            pagerAdapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -692,9 +709,33 @@ public class MainActivity extends AppCompatActivity {
         adb.setPositiveButton("yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                FirebaseUtils.submit();
+                //FirebaseUtils.submit();
                 submitted = true;
                 primaryFilter.setStatus("SUBMITTED");
+
+                FirebaseModel.submit();
+
+                //EMAILING CODE
+                String fromEmail = "allen_gonzales@dlsu.edu.ph";
+                String fromPassword = "Comsci2134!";
+                String toEmails = "vincegonzalesdlsu@gmail.com";
+                List toEmailList = Arrays.asList(toEmails
+                        .split("\\s*,\\s*"));
+                Log.i("SendMailActivity", "To List: " + toEmailList);
+                String emailSubject = "TEST";
+                String emailBody = "TEST";
+
+                ArrayList<Attendance> attendanceToday = (ArrayList<Attendance>) FirebaseModel.getStoredData().getAllAttendanceOfTheDay();
+
+                Log.d("EMAIL", attendanceToday.size() + "");
+
+                for(Attendance a: attendanceToday) {
+                    Log.d("EMAIL", a.getEmail());
+                    new SendMailTask(MainActivity.this).execute(fromEmail,
+                            fromPassword, toEmailList, "[Attendance Checker] New classes have been checked", "Your class " + a.getCode() + "(" + a.getCourseName() + ") has been set as " + a.getStatus() + ".");
+                }
+
+                pagerAdapter.notifyDataSetChanged();
             }
         });
 
@@ -811,7 +852,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //CALL ONLY WHEN THERE IS ASSIGNED ROTOTATION ID
-        if (!primaryFilter.getRotationId().equals("_") && !FirebaseUtils.canSubmit()) {
+        if (!primaryFilter.getRotationId().equals("_")) {
             for (String filter : (ArrayList<String>) filterCounts.get(0))
                 Log.d("FILTERARRAY", filter);
             for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
@@ -1091,11 +1132,12 @@ public class MainActivity extends AppCompatActivity {
 
             if (attendance.getStatus().equals("PENDING")) {
                 attendance.setStatus("DONE");
-                FirebaseUtils.updateAttendance(attendance);
+                Log.i("huh", "in");
+                FirebaseModel.updateAttendance(attendance);
             } else
-                FirebaseUtils.updateAttendance(attendance);
+                FirebaseModel.updateAttendance(attendance);
 
-            pagerAdapter.notifyDataSetChanged();
+                pagerAdapter.notifyDataSetChanged();
             updateFilterCounts();
         }
     }

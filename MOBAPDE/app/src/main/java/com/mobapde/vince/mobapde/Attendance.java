@@ -1,10 +1,14 @@
 package com.mobapde.vince.mobapde;
 
+import android.util.Log;
+
 import com.mobapde.vince.mobapde.AttendanceUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Vince on 3/22/2017.
@@ -15,8 +19,8 @@ public class Attendance implements Serializable{
     public static final String ATTENDANCE = "ATTENDANCE_ITEM";
     public static final String ADMIN_TABLE = "name ng table";
 
-    private String  adminAttendanceId;
-    private List<String> firebaseIds = new ArrayList<String>();
+    private String adminId;
+    private HashMap<String, String> ids;
     private String  facultyName;
     private String  room;
     private String  courseCode;
@@ -39,35 +43,72 @@ public class Attendance implements Serializable{
     private String  status;
     private String  building;
     private long    startTimeFilter;
-    //in case you need it
+    //needed for firebase
     private List<String> combinationFilters;
-    private String  mainCombinationFilter;
 
     public Attendance() {
     }
 
-    public String getAdminAttendanceId() {
-        return adminAttendanceId;
+    //hashmap is used to ensure no duplicates of this attendance in a table
+    public void addId(String tableName, String id){
+        if(ids == null)
+            ids = new HashMap<String, String>();
+        ids.put(tableName, id);
     }
 
-    public void setAdminAttendanceId(String adminAttendanceId) {
-        this.adminAttendanceId = adminAttendanceId;
+    public void removeId(String tableName){
+        ids.put(tableName,null);
     }
 
-    public void addFirebaseId(String id){
-        firebaseIds.add(id);
+    public String getIdOfTable(String tableName){
+        return ids.get(tableName);
     }
 
-    public void removeFirebaseId(String id){
-        firebaseIds.remove(id);
+    public boolean hasTableWithValue(String tableName){
+        boolean hasTable = false;
+
+        if(ids == null)
+            ids = new HashMap<String, String>();
+
+        for (Map.Entry<String, String> entry : ids.entrySet()) {
+            String t = entry.getKey();
+            String child = entry.getValue();
+            if(t.equals(tableName) && child != null)
+                hasTable = true;
+        }
+        return hasTable;
     }
 
-    public List<String> getFirebaseIds() {
-        return firebaseIds;
+    public boolean sameAs(Attendance a){
+        return adminId.equals(a.getAdminId());
     }
 
-    public void setFirebaseIds(List<String> firebaseIds) {
-        this.firebaseIds = firebaseIds;
+    public List<String> generateFilters(){
+        combinationFilters = AttendanceUtils.getCombinationFilters(this);
+        return combinationFilters;
+    }
+
+
+    //---------------- GETTERS AND SETTERS -------------------------------------
+
+
+    public String getAdminId() {
+        if(ids.get("AdminAttendance") != null)
+            adminId = ids.get("AdminAttendance");
+        return adminId;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
+        addId("AdminAttendance",adminId);
+    }
+
+    public HashMap<String, String> getIds() {
+        return ids;
+    }
+
+    public void setIds(HashMap<String, String> ids) {
+        this.ids = ids;
     }
 
     public Attendance(String name){
@@ -243,24 +284,10 @@ public class Attendance implements Serializable{
     }
 
     public List<String> getCombinationFilters() {
-        generateFilters();
         return combinationFilters;
     }
 
     public void setCombinationFilters(List<String> combinationFilters) {
         this.combinationFilters = combinationFilters;
-    }
-
-    public String getMainCombinationFilter() {
-        return mainCombinationFilter;
-    }
-
-    public void setMainCombinationFilter(String mainCombinationFilter) {
-        this.mainCombinationFilter = mainCombinationFilter;
-    }
-
-    public void generateFilters(){
-        if(combinationFilters == null || mainCombinationFilter == null)
-            combinationFilters = AttendanceUtils.getCombinationFilters(this);
     }
 }
