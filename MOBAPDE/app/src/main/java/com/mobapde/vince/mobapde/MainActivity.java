@@ -369,8 +369,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //Next time slot is too early
                     if (withinSlot == -1) {
+                        Log.d("TOO EARLY", "CLASSES ARE TOO EARLY");
                         Toast.makeText(mainContext, "The next classes will start at " + curTimeSlotFormat + ".", Toast.LENGTH_LONG).show();
                         notifications.add("The next classes will start at " + curTimeSlotFormat + ".");
+                        primaryFilter.setStartMillis(-1);
                     }
 
                     AlarmManager alarmManager = (AlarmManager) mainContext.getSystemService(Service.ALARM_SERVICE);
@@ -522,6 +524,7 @@ public class MainActivity extends AppCompatActivity {
                             initializeDrawer();
                         } else {
                             //notifyUser("The administrator assigned new classes for you.");
+                            notifications.add("The administrator assigned new classes.");
                             adminNotifs.add("The administrator assigned new classes.");
                             initializeTimeSlots();
                             Log.d("HASROTATION", primaryFilter.getFilterString());
@@ -574,7 +577,7 @@ public class MainActivity extends AppCompatActivity {
 
                 primaryFilter.setTab(position);
 
-                if (primaryFilter.getStartMillis() == -1) {
+                /*if (primaryFilter.getStartMillis() == -1) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(
                             calendar.get(Calendar.YEAR),
@@ -586,7 +589,7 @@ public class MainActivity extends AppCompatActivity {
                     calendar.set(Calendar.MILLISECOND, 0);
 
                     primaryFilter.setStartMillis(calendar.getTimeInMillis());
-                }
+                }*/
                 Log.d("TABSWITCH", primaryFilter.getFilterString());
                 updateFilterCounts();
 
@@ -649,7 +652,7 @@ public class MainActivity extends AppCompatActivity {
                                 primaryFilter.setStatus("SUBMITTED");
                                 pagerAdapter.notifyDataSetChanged();
                             } else if (!submitted) {
-                                primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                                //primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 Log.d("CANSUBMIT", primaryFilter.getFilterString());
                                 btnSubmit.setText("SUBMIT");
                                 btnSubmit.setEnabled(true);
@@ -873,9 +876,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            for(String building: buildings){
+                Log.d("BUILDINGS", building);
+            }
+
             for (String building : buildings) {
                 for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
-                    if (building.equals(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
+                    Log.d("MNAV", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+
+                    if (building.equalsIgnoreCase(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
                         mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
                         primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
                         primaryFilter.setStartMillis(calendar.getTimeInMillis());
