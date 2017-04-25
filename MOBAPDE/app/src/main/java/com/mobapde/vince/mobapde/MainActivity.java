@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 } else
                     try {
                         FirebaseModel.initialize();
-                    } catch (Exception e){
+                    } catch (Exception e) {
 
                     }
             }
@@ -171,10 +171,10 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
 
         //replace the current time by the time provided in the parameter
-
         primaryFilter = new AttendanceFilter();
         primaryFilter.setTab(0);
         primaryFilter.setStartMillis(calendar.getTimeInMillis());
+        //Log.d("PFININITTS", primaryFilter.getFilterString());
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setTitle("Attendance");
@@ -232,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
 
         //SETS TIME FILTER TO CURRENT DATE WITHOUT TIME TO RETRIEVE UNIQUE TIME SLOTS
         setCurrentDate();
+
+        Log.d("PFININITTS", primaryFilter.getFilterString());
 
         mDatabaseTimeSlots = FirebaseDatabase.getInstance().getReference().child(primaryFilter.getFilterString());
         mDatabaseTimeSlots.orderByChild("startTime");
@@ -732,7 +734,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("EMAIL", attendanceToday.size() + "");
 
-                for(Attendance a: attendanceToday) {
+                for (Attendance a : attendanceToday) {
                     Log.d("EMAIL", a.getEmail());
                     new SendMailTask(MainActivity.this).execute(fromEmail,
                             fromPassword, toEmailList, "[Attendance Checker] New classes have been checked", "Your class " + a.getCode() + "(" + a.getCourseName() + ") has been set as " + a.getStatus() + ".");
@@ -856,54 +858,59 @@ public class MainActivity extends AppCompatActivity {
 
         //CALL ONLY WHEN THERE IS ASSIGNED ROTOTATION ID
         if (!primaryFilter.getRotationId().equals("_")) {
-            for (String filter : (ArrayList<String>) filterCounts.get(0))
-                Log.d("FILTERARRAY", filter);
-            for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
-                Log.d("FILTERARRAY", filter2 + "");
-
-            ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
-            primaryFilter.setStartMillis(calendar.getTimeInMillis());
-            Log.d("PRIMARYFILTERSTRINGB", primaryFilter.getFilterString());
-            int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-            ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
             try {
+                for (String filter : (ArrayList<String>) filterCounts.get(0))
+                    Log.d("FILTERARRAY", filter);
+                for (Integer filter2 : (ArrayList<Integer>) filterCounts.get(1))
+                    Log.d("FILTERARRAY", filter2 + "");
+            } catch (Exception e) {
+
+            }
+
+            try {
+                ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
+                primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                Log.d("PRIMARYFILTERSTRINGB", primaryFilter.getFilterString());
+                int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
+                ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
                 int curCount = filterCounts2.get(indexOfFilterString);
 
                 Log.d("INDEX", indexOfFilterString + "");
 
                 setMenuCounter(buildingIDs.get(0), Math.abs(curCount));
-            } catch (Exception ex) {
 
-            }
 
-            for(String building: buildings){
-                Log.d("BUILDINGS", building);
-            }
+                for (String building : buildings) {
+                    Log.d("BUILDINGS", building);
+                }
 
-            for (String building : buildings) {
-                for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
-                    Log.d("MNAV", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+                for (String building : buildings) {
+                    for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
+                        Log.d("MNAV", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
 
-                    if (building.equalsIgnoreCase(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
-                        mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
-                        primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
-                        primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                        if (building.equalsIgnoreCase(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
+                            mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
+                            primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+                            primaryFilter.setStartMillis(calendar.getTimeInMillis());
 
-                        filterStrings = (ArrayList<String>) filterCounts.get(0);
-                        Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
-                        indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                        filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
-                        try {
-                            int curCount = filterCounts2.get(indexOfFilterString);
+                            filterStrings = (ArrayList<String>) filterCounts.get(0);
+                            Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
+                            indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
+                            filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
+                            try {
+                                int curCount2 = filterCounts2.get(indexOfFilterString);
 
-                            Log.d("INDEX", indexOfFilterString + "");
+                                Log.d("INDEX", indexOfFilterString + "");
 
-                            setMenuCounter(buildingIDs.get(i), Math.abs(curCount));
-                        } catch (Exception ex) {
+                                setMenuCounter(buildingIDs.get(i), Math.abs(curCount2));
+                            } catch (Exception ex) {
 
+                            }
                         }
                     }
                 }
+            } catch (Exception ex) {
+
             }
         }
 
@@ -1146,7 +1153,7 @@ public class MainActivity extends AppCompatActivity {
             } else
                 FirebaseModel.updateAttendance(attendance);
 
-                pagerAdapter.notifyDataSetChanged();
+            pagerAdapter.notifyDataSetChanged();
             updateFilterCounts();
         }
     }
