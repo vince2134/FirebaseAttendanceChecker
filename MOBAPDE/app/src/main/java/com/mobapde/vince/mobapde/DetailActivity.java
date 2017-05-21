@@ -7,9 +7,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +35,7 @@ public class DetailActivity extends AppCompatActivity {
     Attendance item;
 
     Button submitButton, ab, ed, la, pr, sb, sw, us, vr;
+    ImageButton saveBtn;
     String currentCode;
     EditText remark;
 
@@ -56,7 +60,7 @@ public class DetailActivity extends AppCompatActivity {
         facultyImage = (CircleImageView) findViewById(R.id.facultyImage);
         facultyName = (TextView) findViewById(R.id.facultyName);
         facultyCourse = (TextView) findViewById(R.id.facultyCourse);
-        roomName = (TextView) findViewById(R.id.facultyRoom);
+        //roomName = (TextView) findViewById(R.id.facultyRoom);
         classTime = (TextView) findViewById(R.id.classTime);
         submitButton = (Button) findViewById(R.id.submitButton);
         remark = (EditText) findViewById(R.id.remarkField);
@@ -66,7 +70,10 @@ public class DetailActivity extends AppCompatActivity {
 
         facultyName.setText(item.getFacultyName());
         facultyCourse.setText(item.getCourseCode());
-        roomName.setText(item.getRoom());
+
+        //Log.d("COURSECODE", item.getCourseCode());
+        toolbar.setTitle(item.getRoom());
+        //roomName.setText(item.getRoom());
         classTime.setText(formatClassTime(item));
         if(item.getPic() != null)
             Picasso.with(DetailActivity.this).load(item.getPic()).into(facultyImage);
@@ -96,12 +103,38 @@ public class DetailActivity extends AppCompatActivity {
         setSelectedCode(item.getCode());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_save){
+            if (currentCode != null){
+                this.item.setCode(currentCode);
+                this.item.setRemarks(remark.getText().toString());
+                Intent intent = new Intent();
+                intent.putExtra(DONE_ATTENDANCE, this.item);
+                setResult(RESULT_OK, intent);
+                Toast.makeText(getBaseContext(), "Attendance successfully saved.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            else
+                Toast.makeText(getBaseContext(), "Please select a status.", Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public String formatClassTime(Attendance item){
         String timeStringFormat = "";
         Long startTime = item.getStartTime();
         Long endTime = item.getEndTime();
 
-        String timeFormat = "hh:mma";
+        String timeFormat = "HH:mm";
         SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(startTime);

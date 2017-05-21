@@ -16,6 +16,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:visibility="gone"
-        android:text="No pending attendance"
+        android:text="No rooms to check"
         android:textSize="18sp" />
 </RelativeLayout>

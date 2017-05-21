@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@color/cardview_dark_background"
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
@@ -28,14 +29,55 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:background="@color/colorDefault"
+                android:orientation="vertical"
+                android:paddingLeft="24dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp">
+
+
+                <TextView
+                    android:id="@+id/facultyCourse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SOFENGG"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_overlay"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:text="09:15 - 10:45"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:textColor="@color/black_overlay"
+                    android:id="@+id/classTime"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/upperLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorDefault"
+                android:layout_marginTop="1dp"
                 android:elevation="0dp"
                 android:orientation="vertical"
-                android:paddingTop="40dp"
-                android:paddingBottom="40dp">
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:textColor="@color/black_overlay"
+                    android:layout_marginLeft="24dp"
+                    android:text="Faculty"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -62,60 +104,33 @@
                     android:textAlignment="center"
                     android:textColor="@color/black_overlay"
                     android:textSize="18sp" />
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/facultyCourse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SOFENGG"
-                        android:textAlignment="center"
-                        android:textColor="@color/black_overlay"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:text="G304"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/facultyRoom"
-                        android:gravity="center"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="20dp"
-                        android:textColor="@color/black_overlay"/>
-
-                    <TextView
-                        android:text="09:15 - 10:45"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textSize="16sp"
-                        android:gravity="center"
-                        android:textColor="@color/black_overlay"
-                        android:id="@+id/classTime"
-                        android:layout_marginLeft="20dp"
-                        android:textAlignment="center" />
-                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/middleLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="1dp"
                 android:background="@color/colorDefault"
-                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingBottom="40dp"
-                android:paddingTop="40dp"
+                android:paddingBottom="15dp"
+                android:paddingTop="15dp"
                 android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:textColor="@color/black_overlay"
+                    android:layout_marginLeft="24dp"
+                    android:text="Status"/>
 
                 <LinearLayout
                     android:id="@+id/wrapperLayout"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
@@ -225,13 +240,22 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
                         android:orientation="vertical"
                         android:paddingTop="15dp">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:textSize="16sp"
+                            android:paddingLeft="24dp"
+                            android:textColor="@color/black_overlay"
+                            android:text="Remarks"/>
+
                         <EditText
+                            android:layout_gravity="center"
                             android:id="@+id/remarkField"
-                            android:layout_width="match_parent"
+                            android:layout_width="300dp"
                             android:layout_height="match_parent"
                             android:hint="Write a remark..."
                             android:inputType="textLongMessage"
@@ -251,6 +275,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:visibility="gone"
                             android:text="save"
                             android:textSize="14sp"
                             android:theme="@style/AppTheme.Button" />

@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static Boolean submitted = false;
-    private Toolbar toolbar;
+    public static Toolbar toolbar;
     private ViewPager viewPager;
     private static ViewPagerAdapter pagerAdapter;
     private SlidingTabLayout tabSlider;
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     ActionBarDrawerToggle mDrawerToggle;                  // Declaring Action Bar Drawer Toggle
 
     TextView emptyView, tvName, tvEmail;
-    Button btnSubmit;
+    public static Button btnSubmit;
     CircleImageView civProfilePic;
     View nView;
 
@@ -169,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseUsers.keepSynced(true);
 
         Calendar calendar = Calendar.getInstance();
+        String timeFormat = "MMM dd";
+        SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
 
         //replace the current time by the time provided in the parameter
         primaryFilter = new AttendanceFilter();
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         //Log.d("PFININITTS", primaryFilter.getFilterString());
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setTitle("Attendance");
+        toolbar.setTitle("Attendance | " + formatter.format(calendar.getTime()).toUpperCase());
         toolbar.setTitleTextColor(Color.BLACK);
         toolbar.setBackgroundColor(Color.WHITE);
 
@@ -365,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                     c.setTimeInMillis(timeSlots.get(0).getStartMillis());
                     String curTimeSlotFormat = "";
                     String nextClass = "";
-                    String timeFormat = "hh:mm a";
+                    String timeFormat = "HH:mm";
                     SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
                     curTimeSlotFormat = formatter.format(c.getTime());
 
@@ -390,6 +392,12 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent intentAlarm = new Intent(mainContext, AlarmReceiver.class);
                     intentAlarm.putExtra("CUR_TIME_SLOT", curTimeSlotFormat);
+
+                    c.setTimeInMillis(timeSlots.get(0).getEndMillis());
+                    curTimeSlotFormat = formatter.format(c.getTime());
+
+                    intentAlarm.putExtra("CUR_TIME_SLOT_END", curTimeSlotFormat);
+
                     intentAlarm.putExtra("NEXT_CLASS", nextClass);
                     intentAlarm.putExtra("CUR_TIME_LONG", timeSlots.get(0).getStartMillis());
 
@@ -648,15 +656,15 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (submitted) {
-                                btnSubmit.setText("ALREADY SUBMITTED");
-                                btnSubmit.setOnClickListener(null);
+                                btnSubmit.setEnabled(false);
+                                MainActivity.btnSubmit.setTextColor(Color.rgb(66, 66, 66));
                                 primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 primaryFilter.setStatus("SUBMITTED");
                                 pagerAdapter.notifyDataSetChanged();
                             } else if (!submitted) {
                                 //primaryFilter.setStartMillis(calendar.getTimeInMillis());
                                 Log.d("CANSUBMIT", primaryFilter.getFilterString());
-                                btnSubmit.setText("SUBMIT");
+                                MainActivity.btnSubmit.setTextColor(Color.rgb(8, 120, 48));
                                 btnSubmit.setEnabled(true);
                                 btnSubmit.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -868,49 +876,26 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-                ArrayList<String> filterStrings = (ArrayList<String>) filterCounts.get(0);
                 primaryFilter.setStartMillis(calendar.getTimeInMillis());
                 Log.d("PRIMARYFILTERSTRINGB", primaryFilter.getFilterString());
-                int indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                ArrayList<Integer> filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
-                int curCount = filterCounts2.get(indexOfFilterString);
-
-                Log.d("INDEX", indexOfFilterString + "");
-
-                setMenuCounter(buildingIDs.get(0), Math.abs(curCount));
-
 
                 for (String building : buildings) {
                     Log.d("BUILDINGS", building);
                 }
-
-                for (String building : buildings) {
-                    for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
-                        Log.d("MNAV", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
-
-                        if (building.equalsIgnoreCase(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
-                            mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
-                            primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
-                            primaryFilter.setStartMillis(calendar.getTimeInMillis());
-
-                            filterStrings = (ArrayList<String>) filterCounts.get(0);
-                            Log.d("PRIMARYFILTERSTRING", primaryFilter.getFilterString());
-                            indexOfFilterString = filterStrings.indexOf(primaryFilter.getFilterString());
-                            filterCounts2 = (ArrayList<Integer>) filterCounts.get(1);
-                            try {
-                                int curCount2 = filterCounts2.get(indexOfFilterString);
-
-                                Log.d("INDEX", indexOfFilterString + "");
-
-                                setMenuCounter(buildingIDs.get(i), Math.abs(curCount2));
-                            } catch (Exception ex) {
-
-                            }
-                        }
-                    }
-                }
             } catch (Exception ex) {
 
+            }
+
+            for (String building : buildings) {
+                for (int i = 1; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
+                    Log.d("MNAV", mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+
+                    if (building.equalsIgnoreCase(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "")) {
+                        mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).setVisible(true);
+                        primaryFilter.setBuilding(mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getTitle().toString().toUpperCase().replaceAll("\\s+", "") + "");
+                        primaryFilter.setStartMillis(calendar.getTimeInMillis());
+                    }
+                }
             }
         }
 
@@ -966,48 +951,35 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
 
-                for (int i = 0; i < mNavigationView.getMenu().getItem(0).getSubMenu().size(); i++) {
-                    ((TextView) mNavigationView.getMenu().getItem(0).getSubMenu().getItem(i).getActionView()).setTextColor(Color.rgb(109, 109, 109));
-                }
-
                 switch (menuItem.getItemId()) {
                     case R.id.nav_logout:
                         mAuth.signOut();
                         break;
                     case R.id.nav_allbuildings:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ALL");
                         break;
                     case R.id.nav_gokongwei:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("GOKONGWEI");
                         break;
                     case R.id.nav_andrew:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("ANDREW");
                         break;
                     case R.id.nav_lasallehall:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("LASALLEHALL");
                         break;
                     case R.id.nav_miguel:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("MIGUEL");
                         break;
                     case R.id.nav_razon:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("RAZON");
                         break;
                     case R.id.nav_saintjoseph:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("SAINTJOSEPH");
                         break;
                     case R.id.nav_yuchengco:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("YUCHENGCO");
                         break;
                     case R.id.nav_velasco:
-                        ((TextView) menuItem.getActionView()).setTextColor(Color.WHITE);
                         primaryFilter.setBuilding("VELASCO");
                         break;
                     case R.id.nav_help:
@@ -1317,6 +1289,12 @@ public class MainActivity extends AppCompatActivity {
 
             notifyUser(intent.getStringExtra("CUR_TIME_SLOT") + " classes have been filtered. " + intent.getStringExtra("NEXT_CLASS"));
 
+            Calendar calendar = Calendar.getInstance();
+            String timeFormat = "MMM dd";
+            SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
+
+            toolbar.setTitle(intent.getStringExtra("CUR_TIME_SLOT") + " - " + intent.getStringExtra("CUR_TIME_SLOT_END") + " | " + formatter.format(calendar.getTime()).toUpperCase());
+
             Log.d("CUR_TIME_LONG", intent.getLongExtra("CUR_TIME_LONG", -1) + "");
 
             MainActivity.filterTime(intent.getLongExtra("CUR_TIME_LONG", -1));
@@ -1327,6 +1305,8 @@ public class MainActivity extends AppCompatActivity {
                 setNewAlarm(context);
             else
                 startInitializer();
+
+            pagerAdapter.notifyDataSetChanged();
         }
 
         public void setNewAlarm(Context context) {
@@ -1337,7 +1317,7 @@ public class MainActivity extends AppCompatActivity {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Service.ALARM_SERVICE);
             String curTimeSlotFormat = "";
             String nextClass = "";
-            String timeFormat = "hh:mm a";
+            String timeFormat = "HH:mm";
             SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
             curTimeSlotFormat = formatter.format(c.getTime());
 
@@ -1350,6 +1330,16 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intentAlarm = new Intent(context, AlarmReceiver.class);
             intentAlarm.putExtra("CUR_TIME_SLOT", curTimeSlotFormat);
+
+            Log.d("CUR_TIME_SLOT", curTimeSlotFormat);
+
+            c.setTimeInMillis(timeSlots.get(0).getEndMillis());
+            curTimeSlotFormat = formatter.format(c.getTime());
+
+            intentAlarm.putExtra("CUR_TIME_SLOT_END", curTimeSlotFormat);
+
+            Log.d("CUR_TIME_SLOT_END", curTimeSlotFormat);
+
             intentAlarm.putExtra("NEXT_CLASS", nextClass);
             intentAlarm.putExtra("CUR_TIME_LONG", timeSlots.get(0).getStartMillis());
 

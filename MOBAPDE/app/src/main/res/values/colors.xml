@@ -10,7 +10,7 @@
     <color name="colorRed">#f44336</color>
     <color name="black_overlay">#000000</color>
     <color name="gray_overlay">#a6a6a6</color>
-    <color name="cardview_dark_background">#FF424242</color>
+    <color name="cardview_dark_background">#424242</color>
     <color name="cardview_light_background">#087830</color>
     <color name="cardview_shadow_end_color">#03000000</color>
     <color name="cardview_shadow_start_color">#37000000</color>

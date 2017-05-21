@@ -39,7 +39,7 @@
                     android:background="@color/colorBackground" />
 
                 <Button
-                    android:text="You cannot submit yet"
+                    android:text="submit"
                     android:visibility="gone"
                     android:layout_width="match_parent"
                     android:textColor="@color/cardview_light_background"

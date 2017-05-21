@@ -1,6 +1,7 @@
 package com.mobapde.vince.mobapde;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
@@ -30,6 +32,7 @@ public class AttendanceFragment extends Fragment {
     RecyclerViewEmptySupport recView;
     AttendanceAdapter adapter;
     DatabaseReference mDatabase;
+    Button submit;
     TextView empty;
     Boolean setEmpty = false;
     View v;
@@ -65,7 +68,7 @@ public class AttendanceFragment extends Fragment {
         //filter(filter);
         handleFilter();
 
-        if(getContext() != null) {
+        if (getContext() != null) {
             adapter = new AttendanceAdapter(Attendance.class, R.layout.list_item, AttendanceAdapter.AttendanceViewHolder.class, mDatabase, getContext());
 
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -73,13 +76,23 @@ public class AttendanceFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Log.d("DATA_CHANGED", dataSnapshot.hasChildren() + "");
 
-                    if(!dataSnapshot.hasChildren()){
+                    if (!dataSnapshot.hasChildren()) {
                         Log.d("SETTING", setEmpty + "");
-                        if(filter.getTab() == 1) {
-                            empty = (TextView) v.findViewById(R.id.empty_view);
-                            empty.setText("No finished attendance yet");
+                        empty = (TextView) v.findViewById(R.id.empty_view);
+
+                        if (filter.getTab() == 1) {
+                            empty.setText("You haven't checked any rooms yet");
+                            MainActivity.btnSubmit.setTextColor(Color.rgb(66, 66, 66));
+                            MainActivity.btnSubmit.setEnabled(false);
+                        } else {
+                            if (!filter.getBuilding().equalsIgnoreCase("all")) {
+                                empty.setText("No rooms to check in " + filter.getBuilding() + ".");
+                            }
                         }
                         recView.setEmptyView(v.findViewById(R.id.empty_view));
+                    } else {
+                        MainActivity.btnSubmit.setTextColor(Color.rgb(8, 120, 48));
+                        MainActivity.btnSubmit.setEnabled(true);
                     }
 
                     recView.setAdapter(adapter);
@@ -96,7 +109,7 @@ public class AttendanceFragment extends Fragment {
             @Override
             public void onItemClick(Attendance model) {
                 //Toast.makeText(getContext(), model.getFacultyName(), Toast.LENGTH_SHORT).show();
-                if(onSetAttendanceListener != null) {
+                if (onSetAttendanceListener != null) {
                     onSetAttendanceListener.onSetAttendance(model);
                 }
             }
@@ -117,15 +130,19 @@ public class AttendanceFragment extends Fragment {
         return (getArguments().getLong("START_M"));
     }
 
-    boolean getDone(){ return (getArguments().getBoolean("ISDONE"));}
+    boolean getDone() {
+        return (getArguments().getBoolean("ISDONE"));
+    }
 
-    int getTab(){
+    int getTab() {
         return getArguments().getInt("TAB_ID");
     }
 
-    boolean getSubmitted() { return (getArguments().getBoolean("ISSUBMITTED"));}
+    boolean getSubmitted() {
+        return (getArguments().getBoolean("ISSUBMITTED"));
+    }
 
-    public void initializeFilter(){
+    public void initializeFilter() {
         //INITIALIZE FILTER
         filter = new AttendanceFilter();
         filter.setBuilding(getBuilding());
@@ -134,7 +151,7 @@ public class AttendanceFragment extends Fragment {
         filter.setTab(getTab());
     }
 
-    public void handleFilter(){
+    public void handleFilter() {
         recView = (RecyclerViewEmptySupport) v.findViewById(R.id.rec_list);
         recView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -167,7 +184,7 @@ public class AttendanceFragment extends Fragment {
         }
     }*/
 
-    public interface OnSetAttendanceListener{
+    public interface OnSetAttendanceListener {
         public void onSetAttendance(Attendance model);
     }
 
