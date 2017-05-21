@@ -12,7 +12,7 @@
         <item>Early Dismissal</item>
         <item>Unscheduled Class</item>
     </string-array>
-    <string name="nav_allbuildings">All Buildings</string>
+    <string name="nav_allbuildings">All Halls</string>
     <string name="nav_lasallehall">La Salle Hall</string>
     <string name="nav_yuchengco">Yuchengco</string>
     <string name="nav_saintjoseph">Saint Joseph</string>
